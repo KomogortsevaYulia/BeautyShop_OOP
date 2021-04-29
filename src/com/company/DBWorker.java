@@ -34,12 +34,12 @@ public class DBWorker {
             Statement statement=connection.createStatement();
             statement.execute("CREATE TABLE if not exists 'services' " +
                     "(" +
-                    " 'id_services' int PRIMARY KEY AUTOINCREMENT," +
+                    " 'id_services' INTEGER PRIMARY KEY AUTOINCREMENT," +
                     " 'name' text NOT NULL," +
                     " 'price' float NOT NULL);");
             statement.execute("CREATE TABLE if not exists 'clients' " +
                     "(" +
-                    " 'id_clients' int PRIMARY KEY," +
+                    " 'id_clients' INTEGER PRIMARY  KEY AUTOINCREMENT," +
                     " 'surname_clients' text," +
                     " 'name_clients' text NOT NULL," +
                     " 'middle_clients' text," +
@@ -48,7 +48,7 @@ public class DBWorker {
                     " 'phone' int NOT NULL);");
             statement.execute("CREATE TABLE if not exists 'employee' " +
                     "(" +
-                    " 'id_employee' int PRIMARY KEY," +
+                    " 'id_employee' INTEGER PRIMARY KEY AUTOINCREMENT," +
                     " 'surname_employee' text," +
                     " 'name_employee' text NOT NULL," +
                     " 'middle_employee' text," +
@@ -63,11 +63,10 @@ public class DBWorker {
 
     public static void addServices(Services s){
         try {
-            PreparedStatement S = connection.prepareStatement("INSERT INTO services ('id_services','name', 'price') "+
-                    "VALUES(?,?,?)");
-            S.setObject(1,s.getId());
-            S.setObject(2,s.getName());
-            S.setObject(3,s.getPrice());
+            PreparedStatement S = connection.prepareStatement("INSERT INTO services ('name', 'price') "+
+                    "VALUES(?,?)");
+            S.setObject(1,s.getName());
+            S.setObject(2,s.getPrice());
             S.execute();
             S.close();
         } catch (SQLException throwables) {

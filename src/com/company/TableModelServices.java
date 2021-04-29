@@ -73,6 +73,7 @@ public class TableModelServices extends AbstractTableModel {
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return false;
     }
+
     public void addRow(Services p){
         DBWorker.initDB();
         DBWorker.addServices(p);

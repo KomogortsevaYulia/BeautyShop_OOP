@@ -3,17 +3,17 @@ package com.company;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
-public class TableModelClients extends AbstractTableModel {
-    private List<Clients> data;
+public class TableModelEmployee extends AbstractTableModel {
+    private List<Employee> data;
 
-    public TableModelClients(){
+    public TableModelEmployee(){
         DBWorker.initDB();
-        data=DBWorker.selectClients();
+        data=DBWorker.selectEmployee();
         DBWorker.closeDB();
     }
     public void update(){
         DBWorker.initDB();
-        data=DBWorker.selectClients();
+        data=DBWorker.selectEmployee();
         DBWorker.closeDB();
         this.fireTableDataChanged();
     }
@@ -30,7 +30,7 @@ public class TableModelClients extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Clients c= data.get(rowIndex);
+        Employee c= data.get(rowIndex);
         switch (columnIndex) {
             case 0:
                 return c.getId();
@@ -43,7 +43,7 @@ public class TableModelClients extends AbstractTableModel {
             case 4:
                 return c.getBirthdate();
             case 5:
-                return c.getEmail();
+                return c.getPost();
             case 6:
                 return c.getPhone();
         }
@@ -85,21 +85,21 @@ public class TableModelClients extends AbstractTableModel {
             case 4:
                 return "Дата рождения";
             case 5:
-                return "Почта";
+                return "Должность";
             case 6:
                 return "Телефон";
         }
         return null;
     }
-    public void addRow(Clients p){
+    public void addRow(Employee p){
         DBWorker.initDB();
-        DBWorker.addClients(p);
+        DBWorker.addEmployee(p);
         DBWorker.closeDB();
         update();
     }
     public void deleteRow(int[] id){
         DBWorker.initDB();
-        DBWorker.deleteClients(id);
+        DBWorker.deleteEmployee(id);
         DBWorker.closeDB();
         update();
     }
