@@ -105,4 +105,10 @@ public class TableModelEmployee extends AbstractTableModel {
         DBWorker.closeDB();
         update();
     }
+    public void changeRow(int id,Employee e){
+        DBWorker.initDB();
+        DBWorker.changeEmployee(id,e);
+        DBWorker.closeDB();
+        update();
+    }
 }

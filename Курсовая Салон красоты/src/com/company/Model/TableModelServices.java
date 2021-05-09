@@ -82,6 +82,14 @@ public class TableModelServices extends AbstractTableModel {
         DBWorker.closeDB();
         update();
     }
+
+    public void changeRow(int id,Services s){
+        DBWorker.initDB();
+        DBWorker.changeServices(id,s);
+        DBWorker.closeDB();
+        update();
+    }
+
     public void deleteRow(int[] id){
         DBWorker.initDB();
         DBWorker.deleteServices(id);

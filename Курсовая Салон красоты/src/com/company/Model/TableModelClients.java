@@ -99,6 +99,12 @@ public class TableModelClients extends AbstractTableModel {
         DBWorker.closeDB();
         update();
     }
+    public void changeRow(int id,Clients p){
+        DBWorker.initDB();
+        DBWorker.changeClients(id,p);
+        DBWorker.closeDB();
+        update();
+    }
     public void deleteRow(int[] id){
         DBWorker.initDB();
         DBWorker.deleteClients(id);
