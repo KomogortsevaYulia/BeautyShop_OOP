@@ -1,16 +1,14 @@
 package com.company.Model;
 
-import com.company.Essence.Clients;
-import com.company.Essence.Employee;
+import com.company.Essence.*;
 import com.company.Essence.Record;
-import com.company.Essence.Services;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
 public class TableModelPerformedWork extends AbstractTableModel {
 
-    private List<Record> data;
+    private List<Work> data;
 
     public TableModelPerformedWork(){
         DBWorker.initDB();
@@ -32,12 +30,12 @@ public class TableModelPerformedWork extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 12;
+        return 14;
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Record work = data.get(rowIndex);
+        Work work = data.get(rowIndex);
         switch (columnIndex) {
             case 0:
                 return work.getId();
@@ -46,22 +44,26 @@ public class TableModelPerformedWork extends AbstractTableModel {
             case 2:
                 return work.getServices().getPrice();
             case 3:
-                return work.getClients().getSurname();
+                return work.getPoint();
             case 4:
-                return work.getClients().getName();
+                return work.getIncome();
             case 5:
-                return work.getClients().getMiddle();
+                return work.getClients().getSurname();
             case 6:
-                return work.getEmployee().getSurname();
+                return work.getClients().getName();
             case 7:
-                return work.getEmployee().getName();
+                return work.getClients().getMiddle();
             case 8:
-                return work.getEmployee().getMiddle();
+                return work.getEmployee().getSurname();
             case 9:
-                return work.getData();
+                return work.getEmployee().getName();
             case 10:
-                return work.getTime();
+                return work.getEmployee().getMiddle();
             case 11:
+                return work.getData();
+            case 12:
+                return work.getTime();
+            case 13:
                 return work.getComments();
         }
         return null;
@@ -74,11 +76,11 @@ public class TableModelPerformedWork extends AbstractTableModel {
             case 1:
                 return String.class;
             case 2:
-                return String.class;
+                return Integer.class;
             case 3:
-                return String.class;
+                return Integer.class;
             case 4:
-                return String.class;
+                return Integer.class;
             case 5:
                 return String.class;
             case 6:
@@ -92,6 +94,10 @@ public class TableModelPerformedWork extends AbstractTableModel {
             case 10:
                 return String.class;
             case 11:
+                return String.class;
+            case 12:
+                return String.class;
+            case 13:
                 return String.class;
         }
         return null;
@@ -106,28 +112,32 @@ public class TableModelPerformedWork extends AbstractTableModel {
             case 2:
                 return "Стоимость";
             case 3:
-                return "Фамилия клиента";
+                return "Баллы";
             case 4:
-                return "Имя клиента";
+                return "Доход";
             case 5:
-                return "Отчество клиента";
+                return "Фамилия клиента";
             case 6:
-                return "Фамилия сотрудника";
+                return "Имя клиента";
             case 7:
-                return "Имя сотрудника";
+                return "Отчество клиента";
             case 8:
-                return "Отчество сотрудника";
+                return "Фамилия сотрудника";
             case 9:
-                return "Дата";
+                return "Имя сотрудника";
             case 10:
-                return "Время";
+                return "Отчество сотрудника";
             case 11:
+                return "Дата";
+            case 12:
+                return "Время";
+            case 13:
                 return "Комментарий";
         }
         return null;
     }
 
-    public void addRow(Record p){
+    public void addRow(Work p){
         DBWorker.initDB();
         DBWorker.addPerformedWork(p);
         DBWorker.closeDB();
@@ -139,9 +149,9 @@ public class TableModelPerformedWork extends AbstractTableModel {
         DBWorker.closeDB();
         update();
     }
-    public void changeRow(int id,Record e){
+    public void changeRow(int id,Work e){
         DBWorker.initDB();
-        //DBWorker.changeEmployee(id,e);
+        DBWorker.changePerformedWork(id,e);
         DBWorker.closeDB();
         update();
     }

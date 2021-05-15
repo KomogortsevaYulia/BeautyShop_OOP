@@ -28,7 +28,7 @@ public class TableModelServices extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 3;
+        return 2;
     }
 
     @Override
@@ -36,10 +36,8 @@ public class TableModelServices extends AbstractTableModel {
         Services c= data.get(rowIndex);
         switch (columnIndex) {
             case 0:
-                return c.getId();
-            case 1:
                 return c.getName();
-            case 2:
+            case 1:
                 return c.getPrice();
         }
         return null;
@@ -49,10 +47,8 @@ public class TableModelServices extends AbstractTableModel {
     public String getColumnName(int column) {
         switch (column) {
             case 0:
-                return "ID услуги";
-            case 1:
                 return "Название";
-            case 2:
+            case 1:
                 return "Стоимость";
         }
         return null;
@@ -62,10 +58,8 @@ public class TableModelServices extends AbstractTableModel {
     public Class<?> getColumnClass(int columnIndex) {
         switch (columnIndex) {
             case 0:
-                return Integer.class;
-            case 1:
                 return String.class;
-            case 2:
+            case 1:
                 return Integer.class;
         }
         return null;
@@ -83,16 +77,16 @@ public class TableModelServices extends AbstractTableModel {
         update();
     }
 
-    public void changeRow(int id,Services s){
+    public void changeRow(String name,Services s){
         DBWorker.initDB();
-        DBWorker.changeServices(id,s);
+        DBWorker.changeServices(name,s);
         DBWorker.closeDB();
         update();
     }
 
-    public void deleteRow(int[] id){
+    public void deleteRow(String[] name){
         DBWorker.initDB();
-        DBWorker.deleteServices(id);
+        DBWorker.deleteServices(name);
         DBWorker.closeDB();
         update();
     }

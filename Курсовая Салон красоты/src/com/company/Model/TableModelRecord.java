@@ -1,6 +1,8 @@
 package com.company.Model;
 
 import com.company.Essence.Record;
+import com.company.View.FrameRecordDay;
+import com.company.View.MainFrame;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
@@ -19,6 +21,7 @@ public class TableModelRecord extends AbstractTableModel {
         data=DBWorker.selectRecord();
         DBWorker.closeDB();
         this.fireTableDataChanged();
+        FrameRecordDay.TMRecordDay.update();
     }
 
     @Override

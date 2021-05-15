@@ -1,9 +1,7 @@
 package com.company.Model;
 
-import com.company.Essence.Clients;
-import com.company.Essence.Employee;
+import com.company.Essence.*;
 import com.company.Essence.Record;
-import com.company.Essence.Services;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -46,8 +44,7 @@ public class DBWorker {
             Statement statement=connection.createStatement();
             statement.execute("CREATE TABLE if not exists 'services' " +
                     "(" +
-                    " 'id_services' INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    " 'name' text NOT NULL," +
+                    " 'name' text PRIMARY KEY NOT NULL," +
                     " 'price' float NOT NULL);");
             statement.execute("CREATE TABLE if not exists 'clients' " +
                     "(" +
@@ -57,7 +54,8 @@ public class DBWorker {
                     " 'middle_clients' text," +
                     " 'birhdate' text," +
                     " 'email' text," +
-                    " 'phone' text NOT NULL);");
+                    " 'phone' text NOT NULL," +
+                    " 'point' INTEGER );");
             statement.execute("CREATE TABLE if not exists 'employee' " +
                     "(" +
                     " 'id_employee' INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -70,9 +68,10 @@ public class DBWorker {
             statement.execute("CREATE TABLE if not exists 'performedWork' " +
                     "(" +
                     " 'id_work' INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    " 'id_services' INTEGER ," +
                     " 'name' text NOT NULL," +
                     " 'price' float NOT NULL,"+
+                    " 'point' INTEGER ,"+//сколько баллов спишется
+                    " 'income' INTEGER ,"+//доход=прайс-пойнт
                     " 'id_clients' INTEGER ," +
                     " 'surname_clients' text," +
                     " 'name_clients' text NOT NULL," +
@@ -87,7 +86,6 @@ public class DBWorker {
             statement.execute("CREATE TABLE if not exists 'record' " +
                     "(" +
                     " 'id_record' INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    " 'id_services' INTEGER ," +
                     " 'name' text NOT NULL," +
                     " 'price' float NOT NULL,"+
                     " 'id_clients' INTEGER ," +
@@ -108,12 +106,13 @@ public class DBWorker {
     }
 
 
-    public static void addPerformedWork(Record p){
+    public static void addPerformedWork(Work p){
         try {
             PreparedStatement S = connection.prepareStatement("INSERT INTO performedWork (" +
-                    "'id_services', " +
                     "'name'," +
                     "'price'," +
+                    " 'point' ,"+
+                    "'income' ,"+
                     "'id_clients'," +
                     "'surname_clients'," +
                     "'name_clients'," +
@@ -125,21 +124,22 @@ public class DBWorker {
                     "'date'," +
                     "'time'," +
                     "'comment') "+
-                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-            S.setObject(1,p.getServices().getId());
-            S.setObject(2,p.getServices().getName());
-            S.setObject(3,p.getServices().getPrice());
-            S.setObject(4,p.getClients().getId());
-            S.setObject(5,p.getClients().getSurname());
-            S.setObject(6,p.getClients().getName());
-            S.setObject(7,p.getClients().getMiddle());
-            S.setObject(8,p.getEmployee().getId());
-            S.setObject(9,p.getEmployee().getSurname());
-            S.setObject(10,p.getEmployee().getName());
-            S.setObject(11,p.getEmployee().getMiddle());
-            S.setObject(12,p.getData());
-            S.setObject(13,p.getTime());
-            S.setObject(14,p.getComments());
+                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            S.setObject(1,p.getServices().getName());
+            S.setObject(2,p.getServices().getPrice());
+            S.setObject(3,p.getPoint());
+            S.setObject(4,p.getServices().getPrice()-p.getPoint());
+            S.setObject(5,p.getClients().getId());
+            S.setObject(6,p.getClients().getSurname());
+            S.setObject(7,p.getClients().getName());
+            S.setObject(8,p.getClients().getMiddle());
+            S.setObject(9,p.getEmployee().getId());
+            S.setObject(10,p.getEmployee().getSurname());
+            S.setObject(11,p.getEmployee().getName());
+            S.setObject(12,p.getEmployee().getMiddle());
+            S.setObject(13,p.getData());
+            S.setObject(14,p.getTime());
+            S.setObject(15,p.getComments());
             S.execute();
             S.close();
         } catch (SQLException throwables) {
@@ -149,7 +149,6 @@ public class DBWorker {
     public static void addRecord(Record p){
         try {
             PreparedStatement S = connection.prepareStatement("INSERT INTO record (" +
-                    "'id_services', " +
                     "'name'," +
                     "'price'," +
                     "'id_clients'," +
@@ -163,21 +162,20 @@ public class DBWorker {
                     "'date'," +
                     "'time'," +
                     "'comment') "+
-                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-            S.setObject(1,p.getServices().getId());
-            S.setObject(2,p.getServices().getName());
-            S.setObject(3,p.getServices().getPrice());
-            S.setObject(4,p.getClients().getId());
-            S.setObject(5,p.getClients().getSurname());
-            S.setObject(6,p.getClients().getName());
-            S.setObject(7,p.getClients().getMiddle());
-            S.setObject(8,p.getEmployee().getId());
-            S.setObject(9,p.getEmployee().getSurname());
-            S.setObject(10,p.getEmployee().getName());
-            S.setObject(11,p.getEmployee().getMiddle());
-            S.setObject(12,p.getData());
-            S.setObject(13,p.getTime());
-            S.setObject(14,p.getComments());
+                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            S.setObject(1,p.getServices().getName());
+            S.setObject(2,p.getServices().getPrice());
+            S.setObject(3,p.getClients().getId());
+            S.setObject(4,p.getClients().getSurname());
+            S.setObject(5,p.getClients().getName());
+            S.setObject(6,p.getClients().getMiddle());
+            S.setObject(7,p.getEmployee().getId());
+            S.setObject(8,p.getEmployee().getSurname());
+            S.setObject(9,p.getEmployee().getName());
+            S.setObject(10,p.getEmployee().getMiddle());
+            S.setObject(11,p.getData());
+            S.setObject(12,p.getTime());
+            S.setObject(13,p.getComments());
             S.execute();
             S.close();
         } catch (SQLException throwables) {
@@ -198,14 +196,15 @@ public class DBWorker {
     }
     public static void addClients(Clients c){
         try {
-            PreparedStatement S = connection.prepareStatement("INSERT INTO clients ('surname_clients', 'name_clients','middle_clients','birhdate','email','phone') "+
-                    "VALUES(?,?,?,?,?,?)");
+            PreparedStatement S = connection.prepareStatement("INSERT INTO clients ('surname_clients', 'name_clients','middle_clients','birhdate','email','phone','point') "+
+                    "VALUES(?,?,?,?,?,?,?)");
             S.setObject(1,c.getSurname());
             S.setObject(2,c.getName());
             S.setObject(3,c.getMiddle());
             S.setObject(4,c.getBirthdate());
             S.setObject(5,c.getEmail());
             S.setObject(6,c.getPhone());
+            S.setObject(7,c.getPoint());
             S.execute();
             S.close();
         } catch (SQLException throwables) {
@@ -229,11 +228,11 @@ public class DBWorker {
         }
     }
 
-    public static void deleteServices(int[] id){
+    public static void deleteServices(String[] name){
         try {
-            for (int i = 0; i < id.length; i++) {
-                PreparedStatement S = connection.prepareStatement("DELETE FROM services WHERE id_services=?");
-                S.setObject(1,id[i]);
+            for (int i = 0; i < name.length; i++) {
+                PreparedStatement S = connection.prepareStatement("DELETE FROM services WHERE name=?");
+                S.setObject(1,name[i]);
                 S.execute();
                 S.close();
             }
@@ -295,9 +294,6 @@ public class DBWorker {
             PreparedStatement S = connection.prepareStatement("DELETE FROM services");
             S.execute();
             S.close();
-            Statement statement=connection.createStatement();
-            statement.execute("UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'services';");
-            statement.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -352,12 +348,12 @@ public class DBWorker {
     }
 
 
-    public static void changeServices(int id,Services s){
+    public static void changeServices(String name,Services s){
         try {
-            PreparedStatement S = connection.prepareStatement("UPDATE services SET 'name'=? ,'price'=?  WHERE id_services =? ");
+            PreparedStatement S = connection.prepareStatement("UPDATE services SET 'name'=? ,'price'=?  WHERE name=? ");
             S.setObject(1,s.getName());
             S.setObject(2,s.getPrice());
-            S.setObject(3,id);
+            S.setObject(3,name);
             S.execute();
             S.close();
         } catch (SQLException throwables) {
@@ -380,6 +376,17 @@ public class DBWorker {
             throwables.printStackTrace();
         }
     }
+    public static void changeClients(Clients c){
+        try {
+            PreparedStatement S = connection.prepareStatement("UPDATE clients SET 'point'=? WHERE id_clients =? ");
+            S.setObject(1,c.getId());
+            S.setObject(2,c.getPoint());
+            S.execute();
+            S.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
     public static void changeEmployee(int id,Employee c){
         try {
             PreparedStatement S = connection.prepareStatement("UPDATE employee SET 'surname_employee'=?, 'name_employee'=?,'middle_employee'=?,'birhdate'=?,'post'=?,'phone'=?  WHERE id_employee =? ");
@@ -396,12 +403,13 @@ public class DBWorker {
             throwables.printStackTrace();
         }
     }
-    public static void changePerformedWork(int id,Record p){
+    public static void changePerformedWork(int id,Work p){
         try {
             PreparedStatement S = connection.prepareStatement("UPDATE performedWork SET " +
-                            "'id_services'=?, " +
                             "'name'=?," +
                             "'price'=?," +
+                            "'point',"+
+                            "'income',"+
                             "'id_clients'=?," +
                             "'surname_clients'=?," +
                             "'name_clients'=?," +
@@ -414,21 +422,22 @@ public class DBWorker {
                             "'time'=?," +
                             "'comment'=?" +
                     "WHERE 'id_work' =? ");
-            S.setObject(1,p.getServices().getId());
-            S.setObject(2,p.getServices().getName());
-            S.setObject(3,p.getServices().getPrice());
-            S.setObject(4,p.getClients().getId());
-            S.setObject(5,p.getClients().getSurname());
-            S.setObject(6,p.getClients().getName());
-            S.setObject(7,p.getClients().getMiddle());
-            S.setObject(8,p.getEmployee().getId());
-            S.setObject(9,p.getEmployee().getSurname());
-            S.setObject(10,p.getEmployee().getName());
-            S.setObject(11,p.getEmployee().getMiddle());
-            S.setObject(12,p.getData());
-            S.setObject(13,p.getTime());
-            S.setObject(14,p.getComments());
-            S.setObject(15,id);
+            S.setObject(1,p.getServices().getName());
+            S.setObject(2,p.getServices().getPrice());
+            S.setObject(3,p.getPoint());
+            S.setObject(4,p.getServices().getPrice()-p.getPoint());
+            S.setObject(5,p.getClients().getId());
+            S.setObject(6,p.getClients().getSurname());
+            S.setObject(7,p.getClients().getName());
+            S.setObject(8,p.getClients().getMiddle());
+            S.setObject(9,p.getEmployee().getId());
+            S.setObject(10,p.getEmployee().getSurname());
+            S.setObject(11,p.getEmployee().getName());
+            S.setObject(12,p.getEmployee().getMiddle());
+            S.setObject(13,p.getData());
+            S.setObject(14,p.getTime());
+            S.setObject(15,p.getComments());
+            S.setObject(16,id);
             S.execute();
             S.close();
         } catch (SQLException throwables) {
@@ -438,7 +447,6 @@ public class DBWorker {
     public static void changeRecord(int id,Record p){
         try {
             PreparedStatement S = connection.prepareStatement("UPDATE record SET " +
-                    "'id_services'=?, " +
                     "'name'=?," +
                     "'price'=?," +
                     "'id_clients'=?," +
@@ -453,21 +461,20 @@ public class DBWorker {
                     "'time'=?," +
                     "'comment'=?" +
                     "WHERE 'id_record' =? ");
-            S.setObject(1,p.getServices().getId());
-            S.setObject(2,p.getServices().getName());
-            S.setObject(3,p.getServices().getPrice());
-            S.setObject(4,p.getClients().getId());
-            S.setObject(5,p.getClients().getSurname());
-            S.setObject(6,p.getClients().getName());
-            S.setObject(7,p.getClients().getMiddle());
-            S.setObject(8,p.getEmployee().getId());
-            S.setObject(9,p.getEmployee().getSurname());
-            S.setObject(10,p.getEmployee().getName());
-            S.setObject(11,p.getEmployee().getMiddle());
-            S.setObject(12,p.getData());
-            S.setObject(13,p.getTime());
-            S.setObject(14,p.getComments());
-            S.setObject(15,id);
+            S.setObject(1,p.getServices().getName());
+            S.setObject(2,p.getServices().getPrice());
+            S.setObject(3,p.getClients().getId());
+            S.setObject(4,p.getClients().getSurname());
+            S.setObject(5,p.getClients().getName());
+            S.setObject(6,p.getClients().getMiddle());
+            S.setObject(7,p.getEmployee().getId());
+            S.setObject(8,p.getEmployee().getSurname());
+            S.setObject(9,p.getEmployee().getName());
+            S.setObject(10,p.getEmployee().getMiddle());
+            S.setObject(11,p.getData());
+            S.setObject(12,p.getTime());
+            S.setObject(13,p.getComments());
+            S.setObject(14,id);
             S.execute();
             S.close();
         } catch (SQLException throwables) {
@@ -483,7 +490,6 @@ public class DBWorker {
             while(resSet.next())
             {
                 Services p=new Services(
-                        resSet.getInt("id_services"),
                         resSet.getString("name") ,
                         resSet.getFloat("price"));
                 List.add(p);
@@ -509,7 +515,8 @@ public class DBWorker {
                         resSet.getString("middle_clients"),
                         resSet.getString("birhdate"),
                         resSet.getString("email"),
-                        resSet.getString("phone")
+                        resSet.getString("phone"),
+                        resSet.getInt("point")
                 );
                 List.add(p);
             }
@@ -547,17 +554,18 @@ public class DBWorker {
     }
     public static List selectPerformedWork(){
         try {
-            List<Record> List=new ArrayList();
+            List<Work> List=new ArrayList();
             Statement statmt = connection.createStatement();
             ResultSet resSet = statmt.executeQuery("SELECT * FROM performedWork ORDER BY date,id_employee,time");
             while(resSet.next())
             {
-                Record p=new Record(
+                Work p=new Work(
                     resSet.getInt("id_work"),
                     new Services(
-                            resSet.getInt("id_services"),
                             resSet.getString("name") ,
                             resSet.getFloat("price")),
+                    resSet.getInt("point"),
+                    resSet.getInt("income") ,
                     new Clients(
                             resSet.getInt("id_clients"),
                             resSet.getString("surname_clients") ,
@@ -565,7 +573,9 @@ public class DBWorker {
                             resSet.getString("middle_clients"),
                             "",
                             "",
-                            ""),
+                            "",
+                               0 ),
+
                     new Employee(
                             resSet.getInt("id_employee"),
                             resSet.getString("surname_employee") ,
@@ -594,11 +604,9 @@ public class DBWorker {
             ResultSet resSet = statmt.executeQuery("SELECT * FROM record  ORDER BY date,id_employee,time");
             while(resSet.next())
             {
-                System.out.println(resSet.getInt("id_record"));
                 Record p=new Record(
                         resSet.getInt("id_record"),
                         new Services(
-                                resSet.getInt("id_services"),
                                 resSet.getString("name") ,
                                 resSet.getFloat("price")),
                         new Clients(
@@ -608,7 +616,8 @@ public class DBWorker {
                                 resSet.getString("middle_clients"),
                                 "",
                                 "",
-                                ""),
+                                "",
+                                0),
                         new Employee(
                                 resSet.getInt("id_employee"),
                                 resSet.getString("surname_employee") ,
@@ -642,11 +651,9 @@ public class DBWorker {
 
             while(resSet.next())
             {
-                System.out.println(resSet.getInt("id_record"));
                 Record p=new Record(
                         resSet.getInt("id_record"),
                         new Services(
-                                resSet.getInt("id_services"),
                                 resSet.getString("name") ,
                                 resSet.getFloat("price")),
                         new Clients(
@@ -656,7 +663,8 @@ public class DBWorker {
                                 resSet.getString("middle_clients"),
                                 "",
                                 "",
-                                ""),
+                                "",
+                                0),
                         new Employee(
                                 resSet.getInt("id_employee"),
                                 resSet.getString("surname_employee") ,
@@ -699,7 +707,8 @@ public class DBWorker {
                         resSet.getString("middle_clients"),
                         resSet.getString("birhdate"),
                         resSet.getString("email"),
-                        resSet.getString("phone")
+                        resSet.getString("phone"),
+                        resSet.getInt("point")
                 );
                 List.add(p);
                 }
@@ -744,5 +753,23 @@ public class DBWorker {
             throwables.printStackTrace();
         }
         return null;
+    }
+    public static List selectNotices(){
+            List<Record> List=selectRecordDay();
+            Date current = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+            String time = formatter.format(current);
+            int hh=Integer.parseInt(time.substring(0,2));
+            int mm=Integer.parseInt(time.substring(3,5));
+            List<Record> ListRes=new ArrayList<>();
+            for (Record r:List
+                 ) {
+                int h=Integer.parseInt(r.getTime().substring(0,2));
+                int m=Integer.parseInt(r.getTime().substring(3,5));
+                if( (h-hh)<=1 & (m-mm)<=60 ){
+                    ListRes.add(r);
+                }
+            }
+            return ListRes;
     }
 }

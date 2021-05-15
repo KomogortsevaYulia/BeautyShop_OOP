@@ -27,7 +27,7 @@ public class TableModelClients extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 7;
+        return 8;
     }
 
     @Override
@@ -48,6 +48,8 @@ public class TableModelClients extends AbstractTableModel {
                 return c.getEmail();
             case 6:
                 return c.getPhone();
+            case 7:
+                return c.getPoint();
         }
         return null;
     }
@@ -69,6 +71,8 @@ public class TableModelClients extends AbstractTableModel {
                 return String.class;
             case 6:
                 return Long.class;
+            case 7:
+                return Integer.class;
         }
         return null;
     }
@@ -90,9 +94,16 @@ public class TableModelClients extends AbstractTableModel {
                 return "Почта";
             case 6:
                 return "Телефон";
+            case 7:
+                return "Баллы";
         }
         return null;
     }
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return false;
+    }
+
     public void addRow(Clients p){
         DBWorker.initDB();
         DBWorker.addClients(p);
