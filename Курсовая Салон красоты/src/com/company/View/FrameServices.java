@@ -128,8 +128,8 @@ public class FrameServices extends JFrame {
                     int count=-1;
                     for (int i=0;i<TMServices.getRowCount();i++) {
                         if (
-                                name.getText().equals(String.valueOf(TMServices.getValueAt(i, 1))) &
-                                        Float.parseFloat(price.getText())==Float.parseFloat(String.valueOf(TMServices.getValueAt(i, 2)))
+                                name.getText().equals(String.valueOf(TMServices.getValueAt(i, 0))) &
+                                        Float.parseFloat(price.getText())==Float.parseFloat(String.valueOf(TMServices.getValueAt(i, 1)))
                         ){
                             exist=true;
                             count=i;
@@ -211,8 +211,8 @@ public class FrameServices extends JFrame {
                     int count=-1;
                     for (int i=0;i<TMServices.getRowCount();i++) {
                         if (
-                                name.getText().equals(String.valueOf(TMServices.getValueAt(i, 1))) &
-                                        Float.parseFloat(price.getText())==Float.parseFloat(String.valueOf(TMServices.getValueAt(i, 2)))
+                                name.getText().equals(String.valueOf(TMServices.getValueAt(i, 0))) &
+                                        Float.parseFloat(price.getText())==Float.parseFloat(String.valueOf(TMServices.getValueAt(i, 1)))
                         ){
                             exist=true;
                             count=i;

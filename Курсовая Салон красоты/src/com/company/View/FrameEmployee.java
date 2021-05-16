@@ -162,7 +162,7 @@ public class FrameEmployee extends JFrame {
         panel.add(midllename);
         panel.add(new JLabel("День рождения:"));
         panel.add(ftfDate);
-        panel.add(new JLabel("Почта:"));
+        panel.add(new JLabel("Должность:"));
         panel.add(post);
         panel.add(new JLabel("Телефон:"));
         panel.add(ftfPhone);

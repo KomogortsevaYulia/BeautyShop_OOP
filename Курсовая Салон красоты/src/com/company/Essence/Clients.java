@@ -8,9 +8,9 @@ public class Clients {
     private String birthdate;
     private String email;
     private String phone;
-    private int point;
+    private float point;
 
-    public Clients(int id,String surname,String name,String middle,String birthdate,String email,String phone,int point){
+    public Clients(int id,String surname,String name,String middle,String birthdate,String email,String phone,float point){
         this.id=id;
         this.surname=surname;
         this.name=name;
@@ -19,7 +19,7 @@ public class Clients {
         this.email=email;
         this.phone=phone;
     }
-    public Clients(String surname,String name,String middle,String birthdate,String email,String phone,int point){
+    public Clients(String surname,String name,String middle,String birthdate,String email,String phone,float point){
         this.surname=surname;
         this.name=name;
         this.middle=middle;
@@ -32,7 +32,7 @@ public class Clients {
         return name;
     }
 
-    public int getPoint() {
+    public float getPoint() {
         return point;
     }
 

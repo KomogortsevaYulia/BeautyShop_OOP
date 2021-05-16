@@ -6,7 +6,7 @@ import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
 public class TableModelClients extends AbstractTableModel {
-    private List<Clients> data;
+    public List<Clients> data;
 
     public TableModelClients(){
         DBWorker.initDB();
@@ -122,4 +122,10 @@ public class TableModelClients extends AbstractTableModel {
         DBWorker.closeDB();
         update();
     }
+   /* public void changePoint(int id,int p){
+        DBWorker.initDB();
+        DBWorker.changeClients(id,p);
+        DBWorker.closeDB();
+        update();
+    }*/
 }

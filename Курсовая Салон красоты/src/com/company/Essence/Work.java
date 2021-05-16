@@ -3,15 +3,15 @@ package com.company.Essence;
 public class Work {
     private int id;
     private Services services;
-    private int point;//сколько баллов использовалось при оплате
-    private int income;
+    private float point;//сколько баллов использовалось при оплате
+    private float income;
     private Clients clients;
     private Employee employee;
     private String data;
     private String time;
     private String comments;
 
-    public Work(int id, Services s,int points,int income, Clients c, Employee e, String data, String time, String comments)
+    public Work(int id, Services s,float points,float income, Clients c, Employee e, String data, String time, String comments)
     {
         this.id=id;
         this.services=s;
@@ -23,7 +23,7 @@ public class Work {
         this.time=time;
         this.comments=comments;
     }
-    public Work(Services s,int points,int income, Clients c, Employee e, String data, String time, String comments){
+    public Work(Services s,float points,float income, Clients c, Employee e, String data, String time, String comments){
         this.services=s;
         this.clients=c;
         this.income=income;
@@ -34,7 +34,7 @@ public class Work {
         this.comments=comments;
     }
 
-    public int getIncome() {
+    public float getIncome() {
         return income;
     }
 
@@ -42,7 +42,7 @@ public class Work {
         return id;
     }
 
-    public int getPoint() {
+    public float getPoint() {
         return point;
     }
 

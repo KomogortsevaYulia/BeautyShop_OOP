@@ -22,7 +22,7 @@ public class MainFrame extends JFrame {
     public static JFrame f=new JFrame();
     //конструктор
     public MainFrame(){
-
+        RewardsProgram.init();
         //панель верхняя
         JPanel titlePanel = new JPanel();
         String text = "EasyBeauty";
@@ -44,7 +44,7 @@ public class MainFrame extends JFrame {
         main.setBorder(BorderFactory.createEmptyBorder(30,30,30,30));
         
         f.add(main, BorderLayout.CENTER);
-        f.setSize( 1100,600);
+        f.setSize( 1200,700);
         f.setVisible(true);
         f.setTitle("EasyBeauty");
         f.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
@@ -147,6 +147,8 @@ public class MainFrame extends JFrame {
         JButton button8=new JButton("Сотрудники");
         JButton button9=new JButton("Все записи");
         JButton button10=new JButton("Бонусная программа");
+        JButton button11=new JButton("Настройки");
+        JButton button12=new JButton("Отчеты");
         button1.setBackground(new Color(180,240,235));
         button2.setBackground(new Color(180,240,235));
         button3.setBackground(new Color(180,240,235));
@@ -157,6 +159,8 @@ public class MainFrame extends JFrame {
         button8.setBackground(new Color(180,240,235));
         button9.setBackground(new Color(180,240,235));
         button10.setBackground(new Color(180,240,235));
+        button11.setBackground(new Color(180,240,235));
+        button12.setBackground(new Color(180,240,235));
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -222,11 +226,25 @@ public class MainFrame extends JFrame {
         button10.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                RewardsProgram.FrameRewardsPrograms();
+                RewardsProgram.DialogRewardsPrograms();
+            }
+        });
+        button11.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DialogSettings d=new DialogSettings();
+                f.dispose();
+            }
+        });
+        button12.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                FrameReport fr=new FrameReport();
+                f.dispose();
             }
         });
         JPanel paneButton=new JPanel();
-        paneButton.setLayout( new GridLayout(4, 3, 20, 20));
+        paneButton.setLayout( new GridLayout(4, 3, 10, 10));
         paneButton.add(button1);
         paneButton.add(button2);
         paneButton.add(button3);
@@ -237,6 +255,8 @@ public class MainFrame extends JFrame {
         paneButton.add(button8);
         paneButton.add(button9);
         paneButton.add(button10);
+        paneButton.add(button11);
+        paneButton.add(button12);
 
         paneButton.setBackground(Color.white);
         paneButton.setBorder(BorderFactory.createEmptyBorder(20,0,0,20));

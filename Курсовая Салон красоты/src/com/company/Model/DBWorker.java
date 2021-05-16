@@ -42,6 +42,10 @@ public class DBWorker {
     public static void createDB(){
         try {
             Statement statement=connection.createStatement();
+            statement.execute("CREATE TABLE if not exists 'rewards' " +
+                    "(" +
+                    " 'transfersPoint' int NOT NULL," +
+                    " 'discountPoint' int NOT NULL);");
             statement.execute("CREATE TABLE if not exists 'services' " +
                     "(" +
                     " 'name' text PRIMARY KEY NOT NULL," +
@@ -55,7 +59,7 @@ public class DBWorker {
                     " 'birhdate' text," +
                     " 'email' text," +
                     " 'phone' text NOT NULL," +
-                    " 'point' INTEGER );");
+                    " 'point' float );");
             statement.execute("CREATE TABLE if not exists 'employee' " +
                     "(" +
                     " 'id_employee' INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -70,8 +74,8 @@ public class DBWorker {
                     " 'id_work' INTEGER PRIMARY KEY AUTOINCREMENT," +
                     " 'name' text NOT NULL," +
                     " 'price' float NOT NULL,"+
-                    " 'point' INTEGER ,"+//сколько баллов спишется
-                    " 'income' INTEGER ,"+//доход=прайс-пойнт
+                    " 'point' float ,"+//сколько баллов спишется
+                    " 'income' float ,"+//доход=прайс-пойнт
                     " 'id_clients' INTEGER ," +
                     " 'surname_clients' text," +
                     " 'name_clients' text NOT NULL," +
@@ -104,7 +108,6 @@ public class DBWorker {
             throwables.printStackTrace();
         }
     }
-
 
     public static void addPerformedWork(Work p){
         try {
@@ -221,6 +224,18 @@ public class DBWorker {
             S.setObject(4,e.getBirthdate());
             S.setObject(5,e.getPost());
             S.setObject(6,e.getPhone());
+            S.execute();
+            S.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+    public static void addRewards(int p,int p1){
+        try {
+            PreparedStatement S = connection.prepareStatement("INSERT INTO rewards ('transfersPoint', 'discountPoint') "+
+                    "VALUES(?,?)");
+            S.setObject(1,p);
+            S.setObject(2,p1);
             S.execute();
             S.close();
         } catch (SQLException throwables) {
@@ -360,6 +375,17 @@ public class DBWorker {
             throwables.printStackTrace();
         }
     }
+    public static void changeRewards(int p,int p1){
+        try {
+            PreparedStatement S = connection.prepareStatement("UPDATE rewards SET 'transfersPoint'=? ,'discountPoint'=?  ");
+            S.setObject(1,p);
+            S.setObject(2,p1);
+            S.execute();
+            S.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
     public static void changeClients(int id,Clients c){
         try {
             PreparedStatement S = connection.prepareStatement("UPDATE clients SET 'surname_clients'=?, 'name_clients'=?,'middle_clients'=?,'birhdate'=?,'email'=?,'phone'=?  WHERE id_clients =? ");
@@ -376,17 +402,102 @@ public class DBWorker {
             throwables.printStackTrace();
         }
     }
-    public static void changeClients(Clients c){
+    public static void changeClients(int id,float point){
         try {
-            PreparedStatement S = connection.prepareStatement("UPDATE clients SET 'point'=? WHERE id_clients =? ");
-            S.setObject(1,c.getId());
-            S.setObject(2,c.getPoint());
+            //какие значения были до
+            PreparedStatement S2 = connection.prepareStatement("SELECT * FROM clients WHERE id_clients =? ");
+            S2.setObject(1,id);
+            ResultSet resSet = S2.executeQuery();
+            Clients p=new Clients(
+                    resSet.getInt("id_clients"),
+                    resSet.getString("surname_clients") ,
+                    resSet.getString("name_clients"),
+                    resSet.getString("middle_clients"),
+                    resSet.getString("birhdate"),
+                    resSet.getString("email"),
+                    resSet.getString("phone"),
+                    resSet.getFloat("point")
+            );
+            S2.close();
+            //изменение
+            PreparedStatement S = connection.prepareStatement("UPDATE clients SET 'surname_clients'=?, 'name_clients'=?,'middle_clients'=?,'birhdate'=?,'email'=?,'phone'=?,'point'=?  WHERE id_clients =? ");
+            S.setObject(1,"sname1");
+            S.setObject(2,"name1");
+            S.setObject(3,"mname1");
+            S.setObject(4,"HB1");
+            S.setObject(5,"email1");
+            S.setObject(6,"phone1");
+            S.setObject(7,point);
+            S.setObject(8,id);
             S.execute();
             S.close();
+            //значение после
+            PreparedStatement S1 = connection.prepareStatement("SELECT * FROM clients WHERE id_clients =? ");
+            S1.setObject(1,id);
+            ResultSet resSet1 = S1.executeQuery();
+                Clients p2=new Clients(
+                        resSet1.getInt("id_clients"),
+                        resSet1.getString("surname_clients") ,
+                        resSet1.getString("name_clients"),
+                        resSet1.getString("middle_clients"),
+                        resSet1.getString("birhdate"),
+                        resSet1.getString("email"),
+                        resSet1.getString("phone"),
+                        resSet1.getFloat("point")
+                );
+            S1.close();
+
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
+    public static void changeClientsEasy(int id,float point){
+        try {
+            //какие значения были до
+            PreparedStatement S2 = connection.prepareStatement("SELECT * FROM clients WHERE id_clients =? ");
+            S2.setObject(1,id);
+            ResultSet resSet = S2.executeQuery();
+            Clients p=new Clients(
+                    resSet.getInt("id_clients"),
+                    resSet.getString("surname_clients") ,
+                    resSet.getString("name_clients"),
+                    resSet.getString("middle_clients"),
+                    resSet.getString("birhdate"),
+                    resSet.getString("email"),
+                    resSet.getString("phone"),
+                    resSet.getFloat("point")
+            );
+            S2.close();
+
+            //изменение
+            PreparedStatement S = connection.prepareStatement("UPDATE clients SET 'point'=?  WHERE id_clients =? ");
+            S.setObject(1,point);
+            S.setObject(2,id);
+            S.execute();
+            S.close();
+
+            //значение после
+            PreparedStatement S1 = connection.prepareStatement("SELECT * FROM clients WHERE id_clients =? ");
+            S1.setObject(1,id);
+            ResultSet resSet1 = S1.executeQuery();
+            Clients p2=new Clients(
+                    resSet1.getInt("id_clients"),
+                    resSet1.getString("surname_clients") ,
+                    resSet1.getString("name_clients"),
+                    resSet1.getString("middle_clients"),
+                    resSet1.getString("birhdate"),
+                    resSet1.getString("email"),
+                    resSet1.getString("phone"),
+                    resSet1.getFloat("point")
+            );
+            S1.close();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+
     public static void changeEmployee(int id,Employee c){
         try {
             PreparedStatement S = connection.prepareStatement("UPDATE employee SET 'surname_employee'=?, 'name_employee'=?,'middle_employee'=?,'birhdate'=?,'post'=?,'phone'=?  WHERE id_employee =? ");
@@ -501,6 +612,23 @@ public class DBWorker {
         }
         return null;
     }
+    public static int[] selectRewards(){
+        try {
+            int[] res=new int[2];
+            Statement statmt = connection.createStatement();
+            ResultSet resSet = statmt.executeQuery("SELECT * FROM rewards");
+            while(resSet.next())
+            {
+                res[0]=resSet.getInt("transfersPoint");
+                res[1]=resSet.getInt("discountPoint");
+            }
+            statmt.close();
+            return res;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
+    }
     public static List selectClients(){
         try {
             List<Clients> List=new ArrayList();
@@ -564,8 +692,8 @@ public class DBWorker {
                     new Services(
                             resSet.getString("name") ,
                             resSet.getFloat("price")),
-                    resSet.getInt("point"),
-                    resSet.getInt("income") ,
+                    resSet.getFloat("point"),
+                    resSet.getFloat("income") ,
                     new Clients(
                             resSet.getInt("id_clients"),
                             resSet.getString("surname_clients") ,

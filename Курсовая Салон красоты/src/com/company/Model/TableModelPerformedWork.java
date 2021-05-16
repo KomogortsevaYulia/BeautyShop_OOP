@@ -2,6 +2,8 @@ package com.company.Model;
 
 import com.company.Essence.*;
 import com.company.Essence.Record;
+import com.company.View.FrameClients;
+import com.company.View.RewardsProgram;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
@@ -18,10 +20,10 @@ public class TableModelPerformedWork extends AbstractTableModel {
     public void update(){
         DBWorker.initDB();
         data=DBWorker.selectPerformedWork();
+        FrameClients.TMClients.update();
         DBWorker.closeDB();
         this.fireTableDataChanged();
     }
-
 
     @Override
     public int getRowCount() {
@@ -76,11 +78,11 @@ public class TableModelPerformedWork extends AbstractTableModel {
             case 1:
                 return String.class;
             case 2:
-                return Integer.class;
+                return Float.class;
             case 3:
-                return Integer.class;
+                return Float.class;
             case 4:
-                return Integer.class;
+                return Float.class;
             case 5:
                 return String.class;
             case 6:
@@ -137,21 +139,25 @@ public class TableModelPerformedWork extends AbstractTableModel {
         return null;
     }
 
-    public void addRow(Work p){
+    public void addRow(Work e){
         DBWorker.initDB();
-        DBWorker.addPerformedWork(p);
+        DBWorker.addPerformedWork(e);
+        float p=(e.getClients().getPoint()-e.getPoint()+e.getIncome()* RewardsProgram.getPercent()/100);
+        //DBWorker.changeClients(e.getClients().getId(),(e.getClients().getPoint()-e.getPoint()+e.getIncome()* RewardsProgram.getPercent()/100));
         DBWorker.closeDB();
         update();
     }
     public void deleteRow(int[] id){
         DBWorker.initDB();
         DBWorker.deletePerformedWork(id);
+        //DBWorker.changeClients(id,(e.getClients().getPoint()-e.getPoint()+e.getIncome()* RewardsProgram.getPercent()));
         DBWorker.closeDB();
         update();
     }
     public void changeRow(int id,Work e){
         DBWorker.initDB();
         DBWorker.changePerformedWork(id,e);
+     //   DBWorker.changeClients(id,(e.getClients().getPoint()-e.getPoint()+e.getIncome()* RewardsProgram.getPercent()));
         DBWorker.closeDB();
         update();
     }
