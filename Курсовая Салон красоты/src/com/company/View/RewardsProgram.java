@@ -11,7 +11,7 @@ import java.awt.event.ActionListener;
 public class RewardsProgram {
     private static int percent ;
     private static int percentDiscount;
-    public static JPanel panelInfo=new JPanel(new FlowLayout());
+    public static JPanel panelInfo=new JPanel(new GridLayout(6,1,5,5));
     public static int getPercentDiscount() {
         return percentDiscount;
     }
@@ -22,18 +22,17 @@ public class RewardsProgram {
     public static void update(){
         panelInfo.removeAll();
         Font font = new Font(Font.SANS_SERIF, Font.CENTER_BASELINE, 14);
-        JLabel Label = new JLabel();
-        Label.setText("Правила бонусной программы:");
-        Label.setFont(font);
-        panelInfo.add(Label);
-        JLabel Label1 = new JLabel();
-        Label1.setText("1 балл=1 рубль");
-        Label1.setFont(font);
-        panelInfo.add(Label1);
-        JLabel Label2 = new JLabel();
-        Label2.setText("Можно редактировать %");
-        Label2.setFont(font);
-        panelInfo.add(Label2);
+        JLabel l=new JLabel("Правила бонусной программы:");
+        l.setFont(font);
+        l.setAlignmentX(Component.CENTER_ALIGNMENT);
+        l.setHorizontalTextPosition(SwingConstants.CENTER);
+        panelInfo.add(l);
+        panelInfo.add(new JLabel("1 балл = 1 рубль"));
+        panelInfo.add(new JLabel("При оплате любой услуги клиенту возвращается "+percent+"% "));
+        panelInfo.add(new JLabel("от суммы оплаты (без учета бонусов)."));
+        panelInfo.add(new JLabel("Клиент может оплатить "+percentDiscount+"% бонусами от общей суммы."));
+        panelInfo.add(new JLabel("Ниже вы можете отредактировать %:"));
+        panelInfo.setBorder(BorderFactory.createEmptyBorder(30,30,30,30));
         panelInfo.setBackground(Color.white);
         panelInfo.repaint();
         panelInfo.revalidate();
@@ -60,9 +59,10 @@ public class RewardsProgram {
         JPanel panelMain=new JPanel(new BorderLayout());
         panelMain.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         panelMain.setBackground(Color.white);
-        panelMain.add(panelInfo,BorderLayout.NORTH);
+        panelMain.add(panelInfo,BorderLayout.CENTER);
 
         JButton update=new JButton("Изменить %");
+        update.setBackground(new Color(176,224,230));
         update.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -75,7 +75,7 @@ public class RewardsProgram {
         dialog.setTitle("Бонусная программа");
         dialog.setModal(true);
         dialog.setLocationRelativeTo(null);
-        dialog.setSize(400,250);
+        dialog.setSize(500,300);
         dialog.setVisible(true);
 
     }
@@ -91,17 +91,18 @@ public class RewardsProgram {
 
         JPanel p1=new JPanel(new FlowLayout());
         p1.setBackground(Color.white);
-        p1.add(new JLabel("Количество % начисляющихся : "));
+        p1.add(new JLabel("% от стомости оплаты(без бонусов), который вернется клиенту:  "));
         p1.add(Spercent);
         JPanel p2=new JPanel(new FlowLayout());
         p2.setBackground(Color.white);
-        p2.add(new JLabel("Количество % скидки  : "));
+        p2.add(new JLabel("% от стоимости услуги, который можно будет оплатить бонусами: "));
         p2.add(SpercentDisc);
 
         panelChange.add(p1);
         panelChange.add(p2);
 
         JButton change=new JButton("Сохранить");
+        change.setBackground(new Color(176,224,230));
         change.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -137,7 +138,7 @@ public class RewardsProgram {
         d.add(panelChange);
         d.setTitle("Изменение");
         d.setModal(true);
-        d.setSize(300,200);
+        d.setSize(500,200);
         d.setLocationRelativeTo(null);
         d.setVisible(true);
     }

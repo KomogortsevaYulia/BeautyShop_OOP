@@ -18,6 +18,7 @@ public class Clients {
         this.birthdate=birthdate;
         this.email=email;
         this.phone=phone;
+        this.point=point;
     }
     public Clients(String surname,String name,String middle,String birthdate,String email,String phone,float point){
         this.surname=surname;
@@ -25,7 +26,27 @@ public class Clients {
         this.middle=middle;
         this.birthdate=birthdate;
         this.email=email;
+        this.point=point;
         this.phone=phone;
+    }
+    public boolean equals(Clients c) {
+        if(this.getId()==c.getId()
+               // & this.getPoint()==c.getPoint()
+               // &this.getBirthdate().equals(c.getBirthdate())
+                //&this.getName().equals(c.getName())
+               // &this.getMiddle().equals(c.getMiddle())
+               // &this.getEmail().equals(c.getEmail())
+                //&this.getSurname().equals(c.getSurname())
+                //&this.getPhone().equals(c.getPhone())
+        ){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {

@@ -1,42 +1,29 @@
 package com.company.View;
 
-import com.company.Essence.Clients;
-import com.company.Essence.Employee;
-import com.company.Essence.Services;
 import com.company.Essence.Work;
 import com.company.Model.TableModelPerformedWork;
+import com.company.Model.UpdateTM;
 
 import javax.swing.*;
 import javax.swing.text.DateFormatter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class FramePerformedWork extends JFrame {
-    public static  JPanel main=new JPanel();
     public static TableModelPerformedWork TMWork=new TableModelPerformedWork();
     public static JTable tableWork=new JTable(TMWork);
-    public static float pointsClient;
-    public static float pointsLaterPay;
-    public static float income ;
-    public static float price ;
-    public static float usePoint ;
-    public static JLabel pointC=new JLabel();
-    public static JLabel pointLP=new JLabel();
-    public static JLabel pr=new JLabel();
-    public static JLabel in=new JLabel();
-    public static JLabel useP=new JLabel();
-
+   // private static float usePoint;
+    //private static float income;
+    public static Color c2=new Color(176,224,230);
 
     public FramePerformedWork(){
-        tableWork.getColumnModel().getColumn(0).setPreferredWidth(30);
-        tableWork.getColumnModel().getColumn(1).setPreferredWidth(150);
+        tableWork.removeColumn(tableWork.getColumnModel().getColumn(0));
+        //tableWork.getColumnModel().getColumn(0).setPreferredWidth(30);
+        /*tableWork.getColumnModel().getColumn(1).setPreferredWidth(150);
         tableWork.getColumnModel().getColumn(2).setPreferredWidth(50);
         tableWork.getColumnModel().getColumn(3).setPreferredWidth(100);
         tableWork.getColumnModel().getColumn(4).setPreferredWidth(100);
@@ -47,7 +34,7 @@ public class FramePerformedWork extends JFrame {
         tableWork.getColumnModel().getColumn(9).setPreferredWidth(50);
         tableWork.getColumnModel().getColumn(10).setPreferredWidth(50);
         tableWork.getColumnModel().getColumn(11).setPreferredWidth(100);
-
+*/
         //метод создающий окно с выполненными работами
         //кнопки+листенеры+панель с таблицей
         JFrame frame=new JFrame();
@@ -55,20 +42,18 @@ public class FramePerformedWork extends JFrame {
         buttonPanel.setBackground(Color.white);
         buttonPanel.setLayout(new FlowLayout());
         JButton add=new JButton("Новая запись");
-        JButton delete=new JButton("Удалить запись");
-        JButton change=new JButton("Редактировать запись");
+        JButton cancel=new JButton("Сделать возврат средств");
         JButton home=new JButton("На главную");
-        add.setBackground(new Color(93,222,211));
-        delete.setBackground(new Color(93,222,211));
-        change.setBackground(new Color(93,222,211));
-        home.setBackground(new Color(93,222,211));
+        add.setBackground(c2);
+        cancel.setBackground(c2);
+        home.setBackground(c2);
         add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addWork();
+                DialogAddPW d=new DialogAddPW();
             }
         });
-        delete.addActionListener(new ActionListener() {
+        cancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (tableWork.getSelectedRow()==-1){
@@ -78,33 +63,18 @@ public class FramePerformedWork extends JFrame {
                             JOptionPane.ERROR_MESSAGE);
                 }
                 else{
-                    int [] i=tableWork.getSelectedRows();
-                    int [] id = new int[i.length];
-                    for (int j = 0; j < i.length; j++) {
-                        id[j]= (int) TMWork.getValueAt(i[j],0);
-                    }
-                    TMWork.deleteRow(id);
-                }
-            }
-        });
-        change.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (tableWork.getSelectedRow()==-1){
-                    JOptionPane.showMessageDialog(buttonPanel,
-                            " Вы не выбрали запись",
-                            "Ошибка",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-                else{
-                    if (tableWork.getSelectedRowCount()>1) {
+                    int i=Integer.parseInt(String.valueOf(TMWork.getValueAt(tableWork.getSelectedRow(),0)));
+                    if(TMWork.getRow(i).getIncome()>0){
+                        TMWork.cancelRow(TMWork.getRow(i).getId());
                         JOptionPane.showMessageDialog(buttonPanel,
-                                " Можно выбрать только одну запись",
+                                " Возврат средств выполнен!",
+                                "Уведомление",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }else{
+                        JOptionPane.showMessageDialog(buttonPanel,
+                                " Уже был выполнен возврат средств!",
                                 "Ошибка",
                                 JOptionPane.ERROR_MESSAGE);
-                    }
-                    else {
-                        changeWork();
                     }
                 }
             }
@@ -118,8 +88,7 @@ public class FramePerformedWork extends JFrame {
         });
 
         buttonPanel.add(add);
-        buttonPanel.add(delete);
-        buttonPanel.add(change);
+        buttonPanel.add(cancel);
         buttonPanel.add(home);
 
         JPanel panel=new JPanel();
@@ -128,7 +97,13 @@ public class FramePerformedWork extends JFrame {
         panel.add(buttonPanel,BorderLayout.NORTH);
         panel.add(new JScrollPane(tableWork),BorderLayout.CENTER);//добавление таблицы в панель
         panel.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
-
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                e.getWindow().dispose();
+                MainFrame.f.setVisible(true);
+            }
+        });
         frame.add(panel);
         frame.setTitle("Выполненные работы");
         frame.setSize(1200,450);
@@ -136,22 +111,13 @@ public class FramePerformedWork extends JFrame {
         frame.setLocationRelativeTo(null);
     }
 
-    public static void update(){
-
-        income=price-usePoint;
-        float t=income*RewardsProgram.getPercent()/100;
-        pointsLaterPay=income*RewardsProgram.getPercent()/100;
-
-        pointC.setText("Баллы клиента:  "+pointsClient);
-        pointLP.setText("Баллов начислиться:"+pointsLaterPay);
-        in.setText("Доход: "+income+" p.");
-        pr.setText("Стоимость:   "+price+"  р.");
-
-        main.repaint();
-        main.revalidate();
-    }
-
-    public static void addWork() {
+    /*public static void addWork(boolean PRorMain) {
+        JLabel pointC=new JLabel();
+        JLabel pointLP=new JLabel();
+        JLabel pr=new JLabel();
+        JLabel in=new JLabel();
+        JLabel useP=new JLabel();
+        boolean checkBox=false;
 
         DefaultComboBoxModel DCBMServices = new DefaultComboBoxModel();
         for (int i = 0; i < FrameServices.TMServices.getRowCount(); i++) {
@@ -159,15 +125,7 @@ public class FramePerformedWork extends JFrame {
             DCBMServices.addElement(s);
         }
         JComboBox CBServices = new JComboBox(DCBMServices);
-
-        CBServices.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                price = Float.parseFloat(String.valueOf( FrameServices.TMServices.getValueAt(CBServices.getSelectedIndex(),1)));
-                update();
-            }
-        });
-        //CBServices.setSelectedIndexnull);
+        CBServices.setSelectedIndex(0);
 
         DefaultComboBoxModel DCBMClients = new DefaultComboBoxModel();
         for (int i = 0; i < FrameClients.TMClients.getRowCount(); i++) {
@@ -176,13 +134,6 @@ public class FramePerformedWork extends JFrame {
         }
         JComboBox CBClients = new JComboBox(DCBMClients);
         CBClients.setSelectedIndex(0);
-        CBClients.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                pointsClient=Float.parseFloat(String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),7)));
-                update();
-            }
-        });
 
         DefaultComboBoxModel DCBMEmployee = new DefaultComboBoxModel();
         for (int i = 0; i < FrameEmployee.TMEmployee.getRowCount(); i++) {
@@ -191,6 +142,7 @@ public class FramePerformedWork extends JFrame {
         }
         JComboBox CBEmployee = new JComboBox(DCBMEmployee);
         CBEmployee.setSelectedIndex(0);
+
 
         // Форматирующий объект даты
         DateFormatter dateFormatter = new DateFormatter(new SimpleDateFormat("dd.MM.yyyy"));
@@ -234,22 +186,23 @@ public class FramePerformedWork extends JFrame {
         comment.setColumns(15);
         pM8.add(comment);
 
+
         JPanel panelMain=new JPanel();
         panelMain.setBackground(Color.white);
         panelMain.setLayout(new GridLayout(6, 1, 0, 0));
 
         JButton addClients=new JButton("Новый клиент");
-        addClients.setBackground(new Color(93,222,211));
+        addClients.setBackground(c2);
         addClients.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 FrameClients.addCliens();
+                int s=DCBMClients.getSize();
                 DCBMClients.removeAllElements();
+                s=DCBMClients.getSize();
                 for (int i = 0; i < FrameClients.TMClients.getRowCount(); i++) {
-                    String s=FrameClients.TMClients.getValueAt(i,1)+"  "+FrameClients.TMClients.getValueAt(i,2)+"  "+FrameClients.TMClients.getValueAt(i,3);
-                    DCBMClients.addElement(s);
+                    DCBMClients.addElement(FrameClients.TMClients.getValueAt(i,1)+"  "+FrameClients.TMClients.getValueAt(i,2)+"  "+FrameClients.TMClients.getValueAt(i,3));
                 }
-                CBClients.setSelectedIndex(DCBMClients.getSize()-1);
             }
         });
         JPanel pM3=new JPanel(new FlowLayout());
@@ -272,99 +225,83 @@ public class FramePerformedWork extends JFrame {
         panelMain.add(pM8);
 
 
-        JDialog dialog=new JDialog();
+        JFrame frame=new JFrame();
 
         JPanel panelAdd=new JPanel(new FlowLayout());
         panelAdd.setBackground(Color.white);
         JButton add=new JButton("Сохранить");
-        add.setBackground(new Color(180,240,235));
+        add.setBackground(c2);
         add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                TMWork.addRow(new Work(
-                        new Services(
-                                String.valueOf(FrameServices.TMServices.getValueAt(CBServices.getSelectedIndex(),0)),
-                                Float.parseFloat(String.valueOf(FrameServices.TMServices.getValueAt(CBServices.getSelectedIndex(),1)))),
-                        usePoint,
-                        income,
-                        new Clients(
-                                Integer.valueOf(String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),0))),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),1)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),2)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),3)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),4)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),5)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),6)),
-                                Float.valueOf(String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),7)))
-                        ),
-                        new Employee(
-                                Integer.parseInt(String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),0))),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),1)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),2)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),3)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),4)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),5)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),6))),
-                        ftfDate.getText(),
-                        ftfTime.getText(),
-                        comment.getText())
+                Date date=new Date();
+                Calendar calendar = new GregorianCalendar(Integer.valueOf(String.valueOf(ftfDate.getText()).substring(6,10) ),
+                        Integer.valueOf(String.valueOf(ftfDate.getText()).substring(3,5) )-1 ,
+                        Integer.valueOf(String.valueOf(ftfDate.getText()).substring(0,2) ),
+                        Integer.valueOf(String.valueOf(ftfTime.getText()).substring(0,2) ),
+                        Integer.valueOf(String.valueOf(ftfTime.getText()).substring(3,5) )
                 );
+                Date date2=calendar.getTime();
+                if(date.before(date2)){
+                    JOptionPane.showMessageDialog(frame,
+                            " Нельзя выполнять работы в будущем времени !",
+                            "Ошибка",
+                            JOptionPane.ERROR_MESSAGE);
+                }else {
+                    TMWork.addRow(new Work(
+                            FrameServices.TMServices.getRow(String.valueOf(FrameServices.TMServices.getValueAt(CBServices.getSelectedIndex(), 0))),
+                            usePoint,
+                            income,
+                            FrameClients.TMClients.getRow(Integer.valueOf(String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(), 0)))),
+                            FrameEmployee.TMEmployee.getRow(Integer.parseInt(String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(), 0)))),
+                            ftfDate.getText(),
+                            ftfTime.getText(),
+                            comment.getText())
+                    );
+                    frame.dispose();
+                    if(PRorMain){
 
-                dialog.dispose();
-                JOptionPane.showMessageDialog(dialog,
-                        " Запись успешно добавлена!",
-                        "Уведомление",
-                        JOptionPane.INFORMATION_MESSAGE);
+                    }else{
+                        MainFrame.f.setVisible(true);
+                    }
+                    JOptionPane.showMessageDialog(frame,
+                            " Запись успешно добавлена!",
+                            "Уведомление",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
             }
         });
         panelAdd.add(add);
 
 
-        JPanel panelMainPay =new JPanel(new GridLayout(5, 1, 0, 0));
+        JPanel panelMainPay =new JPanel(new GridLayout(6, 1, 0, 0));
         JPanel pM4=new JPanel(new FlowLayout());
-        pointC.setText("Баллы клиента:  "+pointsClient);
+        pointC.setText("Баллы клиента:  "+0);
         pM4.add(pointC);
         JPanel p1=new JPanel(new FlowLayout());
-        pr.setText("Стоимость:   "+price+"  р.");
+        pr.setText("Стоимость:   "+0+"  р.");
         p1.add(pr);
-
+        JButton but=new JButton("Рассчитать");
         JPanel p3=new JPanel(new FlowLayout());
         p3.setBackground(Color.white);
         JCheckBox cb=new JCheckBox("Баллы ");
+        cb.setBackground(Color.white);
         cb.setHorizontalTextPosition(JCheckBox.LEFT);
         cb.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    if(price * RewardsProgram.getPercentDiscount()/100 <= pointsClient){
-                        usePoint= Float.parseFloat(String.valueOf(price * RewardsProgram.getPercentDiscount()/100));
-                        useP.setText("   Использовать "+ usePoint+" баллов");
-                    }
-                    else{
-                        usePoint=pointsClient;
-                        useP.setText("   Использовать "+ pointsClient+" баллов ");
-                    }
-                    update();
-                    p3.repaint();
-                    p3.revalidate();
-                } else {
-                    usePoint=0;
-                    update();
-                    useP.setText("   Использовать "+0+" баллов ");
-                    p3.repaint();
-                    p3.revalidate();
-                }
+                but.doClick();
             }
         });
         p3.add(cb);
         p3.add(useP);
 
         JPanel p2=new JPanel(new FlowLayout());
-        pointLP.setText("Баллов начислиться:"+pointsLaterPay);
+        pointLP.setText("Баллов начислиться:"+0);
         p2.add(pointLP);
 
         JPanel p5=new JPanel(new FlowLayout());
-        in.setText("Доход: "+income+" p.");
+        in.setText("Доход: "+0+" p.");
         p5.add(in);
 
         pM4.setBackground(Color.white);
@@ -372,6 +309,43 @@ public class FramePerformedWork extends JFrame {
         p2.setBackground(Color.white);
         p3.setBackground(Color.white);
         p5.setBackground(Color.white);
+
+        but.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                float price=Float.parseFloat(String.valueOf(FrameServices.TMServices.getValueAt(CBServices.getSelectedIndex(),1)));
+                float pointclient=Float.parseFloat(String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),7)));
+                if (cb.isSelected()) {
+                    if(price * RewardsProgram.getPercentDiscount()/100 <= pointclient){
+                        usePoint= Float.parseFloat(String.valueOf(price * RewardsProgram.getPercentDiscount()/100));
+                        useP.setText("   Использовать "+ usePoint+" баллов");
+                    }
+                    else{
+                        usePoint=pointclient;
+                        useP.setText("   Использовать "+ pointclient+" баллов ");
+                    }
+                } else {
+                    usePoint=0;
+                    useP.setText("   Использовать "+0+" баллов ");
+                }
+
+                income=price-usePoint;
+                float pointsLaterPay=income*RewardsProgram.getPercent()/100;
+
+                pointC.setText("Баллы клиента:  "+pointclient);
+                pointLP.setText("Баллов начислиться:"+pointsLaterPay);
+                in.setText("Доход: "+income+" p.");
+                pr.setText("Стоимость:   "+price+"  р.");
+
+                main.repaint();
+                main.revalidate();
+            }
+        });
+        JPanel p=new JPanel(new FlowLayout());
+        p.setBackground(Color.white);
+        p.add(but);
+        panelMainPay.add(p);
         panelMainPay.add(pM4);
         panelMainPay.add(p1);
         panelMainPay.add(p2);
@@ -385,172 +359,22 @@ public class FramePerformedWork extends JFrame {
         main.setBackground(Color.white);
         main.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
 
-        dialog.setTitle("Новая выполненная работа");
-        dialog.setLayout(new BorderLayout());
-        dialog.add(main);
-        dialog.setModal(true);
-        dialog.setSize(650,500);
-        dialog.setLocationRelativeTo(null);
-        dialog.setVisible(true);
-    }
-    public static void changeWork() {
-        int index=-1;
-        DefaultComboBoxModel DCBMServices = new DefaultComboBoxModel();
-        for (int i = 0; i < FrameServices.TMServices.getRowCount(); i++) {
-            String s=FrameServices.TMServices.getValueAt(i,1)+"  "+FrameServices.TMServices.getValueAt(i,2)+" р.";
-            DCBMServices.addElement(s);
-            String str= (String) TMWork.getValueAt(tableWork.getSelectedRow(),1);
-            if (s.equals(str)){
-                index=i;
-            }
-        }
-        JComboBox CBServices = new JComboBox(DCBMServices);
-        CBServices.setSelectedIndex(index);
-
-        DefaultComboBoxModel DCBMClients = new DefaultComboBoxModel();
-        for (int i = 0; i < FrameClients.TMClients.getRowCount(); i++) {
-            String s=FrameClients.TMClients.getValueAt(i,1)+"  "+FrameClients.TMClients.getValueAt(i,2)+"  "+FrameClients.TMClients.getValueAt(i,3);
-            DCBMClients.addElement(s);
-            String str=TMWork.getValueAt(tableWork.getSelectedRow(),3)+"  "+TMWork.getValueAt(tableWork.getSelectedRow(),4)+"  "+TMWork.getValueAt(tableWork.getSelectedRow(),5);
-            if (s.equals(str)){
-                index=i;
-            }
-        }
-        JComboBox CBClients = new JComboBox(DCBMClients);
-        CBClients.setSelectedIndex(index);
-
-        DefaultComboBoxModel DCBMEmployee = new DefaultComboBoxModel();
-        for (int i = 0; i < FrameEmployee.TMEmployee.getRowCount(); i++) {
-            String s=FrameEmployee.TMEmployee.getValueAt(i,5)+"  "+FrameEmployee.TMEmployee.getValueAt(i,1)+"  "+FrameEmployee.TMEmployee.getValueAt(i,2)+"  "+FrameEmployee.TMEmployee.getValueAt(i,3);
-            DCBMEmployee.addElement(s);
-            String str=TMWork.getValueAt(tableWork.getSelectedRow(),6)+"  "+TMWork.getValueAt(tableWork.getSelectedRow(),7)+"  "+TMWork.getValueAt(tableWork.getSelectedRow(),8);
-            if (s.equals(str)){
-                index=i;
-            }
-        }
-        JComboBox CBEmployee = new JComboBox(DCBMEmployee);
-        CBEmployee.setSelectedIndex(index);
-
-        // Форматирующий объект даты
-        DateFormatter dateFormatter = new DateFormatter(new SimpleDateFormat("dd.MM.yyyy"));
-        dateFormatter.setAllowsInvalid(false);
-        dateFormatter.setOverwriteMode(true);
-        // Создание форматированного текстового поля даты
-        JFormattedTextField ftfDate = new JFormattedTextField(dateFormatter);
-        ftfDate.setColumns(32);
-        ftfDate.setValue(new Date());
-        Calendar calendar = new GregorianCalendar(Integer.valueOf(String.valueOf(tableWork.getValueAt(tableWork.getSelectedRow(),9)).substring(6,10) ),
-                Integer.valueOf(String.valueOf(tableWork.getValueAt(tableWork.getSelectedRow(),9)).substring(3,5) )-1 ,
-               Integer.valueOf(String.valueOf(tableWork.getValueAt(tableWork.getSelectedRow(),9)).substring(0,2) ),
-                Integer.valueOf(String.valueOf(tableWork.getValueAt(tableWork.getSelectedRow(),10)).substring(0,2) ),
-                Integer.valueOf(String.valueOf(tableWork.getValueAt(tableWork.getSelectedRow(),10)).substring(3,5) )
-        );
-        Date date1 = calendar.getTime();
-        ftfDate.setValue(date1);
-
-        // Форматирующий объект даты
-        DateFormatter timeFormatter = new DateFormatter(new SimpleDateFormat("HH:mm"));
-        timeFormatter.setAllowsInvalid(false);
-        timeFormatter.setOverwriteMode(true);
-        // Создание форматированного текстового поля даты
-        JFormattedTextField ftfTime = new JFormattedTextField(timeFormatter);
-        ftfTime.setColumns(32);
-        ftfTime.setValue(date1);
-
-        JPanel panel=new JPanel();
-        panel.setBackground(Color.white);
-        panel.setLayout(new GridLayout(6, 2, 10, 10));
-        panel.add(new JLabel("Услуга:"));
-        panel.add(new JScrollPane(CBServices));
-
-        JButton addClients=new JButton("Добавить клиента");
-        addClients.setBackground(new Color(93,222,211));
-        addClients.addActionListener(new ActionListener() {
+        frame.setTitle("Новая выполненная работа");
+        frame.setLayout(new BorderLayout());
+        frame.add(main);
+        frame.addWindowListener(new WindowAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                FrameClients.addCliens();
-                DCBMClients.removeAllElements();
-                for (int i = 0; i < FrameClients.TMClients.getRowCount(); i++) {
-                    String s=FrameClients.TMClients.getValueAt(i,1)+"  "+FrameClients.TMClients.getValueAt(i,2)+"  "+FrameClients.TMClients.getValueAt(i,3);
-                    DCBMClients.addElement(s);
+            public void windowClosing(WindowEvent e) {
+                e.getWindow().dispose();
+                if(PRorMain){
+                    FramePerformedWork fr=new FramePerformedWork();
+                }else{
+                    MainFrame.f.setVisible(true);
                 }
-                CBClients.setSelectedIndex(DCBMClients.getSize()-1);
             }
         });
-        JPanel pan=new JPanel(new BorderLayout());
-        pan.setBackground(Color.white);
-        pan.add(new JLabel("Клиент:"),BorderLayout.WEST);
-        pan.add(addClients,BorderLayout.EAST);
-        panel.add(pan);
-        panel.add(new JScrollPane(CBClients));
-
-        panel.add(new JLabel("Сотрудник:"));
-        panel.add(new JScrollPane(CBEmployee));
-        panel.add(new JLabel("Дата:"));
-        panel.add(ftfDate);
-        panel.add(new JLabel("Время:"));
-        panel.add(ftfTime);
-        panel.add(new JLabel("Комментарий:"));
-        JTextField comment=new JTextField();comment.setText(String.valueOf(tableWork.getValueAt(tableWork.getSelectedRow(),11)));
-        panel.add(comment);
-
-        JDialog dialog=new JDialog();
-
-        JButton add=new JButton("Изменить");
-        add.setBackground(new Color(93,222,211));
-        add.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                TMWork.changeRow(Integer.parseInt(String.valueOf(TMWork.getValueAt(tableWork.getSelectedRow(),0))),
-                        new Work(
-                        new Services(
-                                String.valueOf(FrameServices.TMServices.getValueAt(CBServices.getSelectedIndex(),1)),
-                                Float.valueOf(String.valueOf(FrameServices.TMServices.getValueAt(CBServices.getSelectedIndex(),2)))),
-                        0,//Integer.parseInt(String.valueOf()),
-                        Integer.parseInt(String.valueOf(FrameServices.TMServices.getValueAt(CBServices.getSelectedIndex(),2))),//Integer.parseInt(String.valueOf()),
-                        new Clients(
-                                Integer.valueOf(String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),0))),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),1)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),2)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),3)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),4)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),5)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),6)),
-                                Integer.parseInt(String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),7)))
-                        ),
-                        new Employee(
-                                Integer.valueOf(String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),0))),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),1)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),2)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),3)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),4)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),5)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),6))),
-                        ftfDate.getText(),
-                        ftfTime.getText(),
-                        comment.getText())
-                );
-                dialog.dispose();
-                JOptionPane.showMessageDialog(dialog,
-                        " Запись успешно изменена!",
-                        "Уведомление",
-                        JOptionPane.INFORMATION_MESSAGE);
-            }
-        });
-
-        JPanel p=new JPanel();
-        p.setLayout(new BorderLayout());
-        p.add(panel,BorderLayout.CENTER);
-        p.add(add,BorderLayout.SOUTH);
-        p.setBackground(Color.white);
-        p.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
-
-        dialog.setTitle("Новая выполненная работа");
-        dialog.setLayout(new BorderLayout());
-        dialog.add(p);
-        dialog.setModal(true);
-        dialog.setSize(1000,450);
-        dialog.setLocationRelativeTo(null);
-        dialog.setVisible(true);
-    }
+        frame.setSize(670,500);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }*/
 }

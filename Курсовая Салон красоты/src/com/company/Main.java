@@ -4,6 +4,7 @@ import com.company.Essence.Clients;
 import com.company.Essence.Employee;
 import com.company.Essence.Services;
 import com.company.Model.DBWorker;
+import com.company.Model.Сancellation;
 import com.company.View.FrameClients;
 import com.company.View.FramePerformedWork;
 import com.company.View.MainFrame;
@@ -15,12 +16,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-public class Main {
+public class Main  {
     public static void main(String[] args) {
-        //MainFrame m=new MainFrame();
-        DBWorker.initDB();
-        DBWorker.changeClients(1,55);
-        DBWorker.changeClientsEasy(1,40);
-        DBWorker.closeDB();
+        Сancellation.addLog("----------------------------------------------------------------------------------------------------------------------------------------------------------");
+        MainFrame m=new MainFrame();
     }
 }

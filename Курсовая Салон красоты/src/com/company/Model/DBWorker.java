@@ -251,6 +251,18 @@ public class DBWorker {
                 S.execute();
                 S.close();
             }
+            for (int i = 0; i < name.length; i++) {
+                PreparedStatement S = connection.prepareStatement("DELETE FROM performedWork WHERE name=?");
+                S.setObject(1,name[i]);
+                S.execute();
+                S.close();
+            }
+            for (int i = 0; i < name.length; i++) {
+                PreparedStatement S = connection.prepareStatement("DELETE FROM record WHERE name=?");
+                S.setObject(1,name[i]);
+                S.execute();
+                S.close();
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -259,6 +271,18 @@ public class DBWorker {
         try {
             for (int i = 0; i < id.length; i++) {
                 PreparedStatement S = connection.prepareStatement("DELETE FROM clients WHERE id_clients=?");
+                S.setObject(1,id[i]);
+                S.execute();
+                S.close();
+            }
+            for (int i = 0; i < id.length; i++) {
+                PreparedStatement S = connection.prepareStatement("DELETE FROM performedWork WHERE id_clients=?");
+                S.setObject(1,id[i]);
+                S.execute();
+                S.close();
+            }
+            for (int i = 0; i < id.length; i++) {
+                PreparedStatement S = connection.prepareStatement("DELETE FROM record WHERE id_clients=?");
                 S.setObject(1,id[i]);
                 S.execute();
                 S.close();
@@ -274,18 +298,14 @@ public class DBWorker {
                 S.setObject(1,id[i]);
                 S.execute();
                 S.close();
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-    public static void deletePerformedWork(int[] id){
-        try {
-            for (int i = 0; i < id.length; i++) {
-                PreparedStatement S = connection.prepareStatement("DELETE FROM performedWork WHERE id_work=?");
-                S.setObject(1,id[i]);
-                S.execute();
-                S.close();
+                PreparedStatement S2 = connection.prepareStatement("DELETE FROM record WHERE id_employee=?");
+                S2.setObject(1,id[i]);
+                S2.execute();
+                S2.close();
+                PreparedStatement S3 = connection.prepareStatement("DELETE FROM performedWork WHERE id_employee=?");
+                S3.setObject(1,id[i]);
+                S3.execute();
+                S3.close();
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -303,78 +323,22 @@ public class DBWorker {
             throwables.printStackTrace();
         }
     }
-
-    public static void deleteServices(){
+    public static void deleteWork(int[] id){
         try {
-            PreparedStatement S = connection.prepareStatement("DELETE FROM services");
-            S.execute();
-            S.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-    public static void deleteClients(){
-        try {
-            PreparedStatement S = connection.prepareStatement("DELETE FROM clients");
-            S.execute();
-            S.close();
-            Statement statement=connection.createStatement();
-            statement.execute("UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'clients';");
-            statement.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-    public static void deleteEmployee(){
-        try {
-            PreparedStatement S = connection.prepareStatement("DELETE FROM employee");
-            S.execute();
-            S.close();
-            Statement statement=connection.createStatement();
-            statement.execute("UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'employee';");
-            statement.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-    public static void deletePerformedWork(){
-        try {
-            PreparedStatement S = connection.prepareStatement("DELETE FROM performedWork");
-            S.execute();
-            S.close();
-            Statement statement=connection.createStatement();
-            statement.execute("UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'performedWork';");
-            statement.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-    public static void deleteRecord(){
-        try {
-            PreparedStatement S = connection.prepareStatement("DELETE FROM record");
-            S.execute();
-            S.close();
-            Statement statement=connection.createStatement();
-            statement.execute("UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'record';");
-            statement.close();
+            for (int i = 0; i < id.length; i++) {
+                PreparedStatement S = connection.prepareStatement("DELETE FROM performedWork WHERE id_work=?");
+                S.setObject(1,id[i]);
+                S.execute();
+                S.close();
+                //Statement statement = connection.createStatement();
+                //statement.execute("UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'performedWork';");
+                //statement.close();
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
 
-
-    public static void changeServices(String name,Services s){
-        try {
-            PreparedStatement S = connection.prepareStatement("UPDATE services SET 'name'=? ,'price'=?  WHERE name=? ");
-            S.setObject(1,s.getName());
-            S.setObject(2,s.getPrice());
-            S.setObject(3,name);
-            S.execute();
-            S.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
     public static void changeRewards(int p,int p1){
         try {
             PreparedStatement S = connection.prepareStatement("UPDATE rewards SET 'transfersPoint'=? ,'discountPoint'=?  ");
@@ -386,9 +350,39 @@ public class DBWorker {
             throwables.printStackTrace();
         }
     }
+    public static void changeServices(String name,Services s){
+        try {
+            PreparedStatement S = connection.prepareStatement("UPDATE services SET 'name'=? ,'price'=?  WHERE name=? ");
+            S.setObject(1,s.getName());
+            S.setObject(2,s.getPrice());
+            S.setObject(3,name);
+            S.execute();
+            S.close();
+            PreparedStatement S2 = connection.prepareStatement("UPDATE record SET 'name'=? ,'price'=?  WHERE name=? ");
+            S2.setObject(1,s.getName());
+            S2.setObject(2,s.getPrice());
+            S2.setObject(3,name);
+            S2.execute();
+            S2.close();
+            PreparedStatement S3 = connection.prepareStatement("UPDATE performedWork SET 'name'=?  WHERE name=? ");
+            S3.setObject(1,s.getName());
+            S3.setObject(2,name);
+            S3.execute();
+            S3.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
     public static void changeClients(int id,Clients c){
         try {
-            PreparedStatement S = connection.prepareStatement("UPDATE clients SET 'surname_clients'=?, 'name_clients'=?,'middle_clients'=?,'birhdate'=?,'email'=?,'phone'=?  WHERE id_clients =? ");
+            PreparedStatement S = connection.prepareStatement("UPDATE clients SET " +
+                    "'surname_clients'=?, " +
+                    "'name_clients'=?," +
+                    "'middle_clients'=?," +
+                    "'birhdate'=?," +
+                    "'email'=?," +
+                    "'phone'=?  " +
+                    "WHERE id_clients =? ");
             S.setObject(1,c.getSurname());
             S.setObject(2,c.getName());
             S.setObject(3,c.getMiddle());
@@ -398,106 +392,57 @@ public class DBWorker {
             S.setObject(7,id);
             S.execute();
             S.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-    public static void changeClients(int id,float point){
-        try {
-            //какие значения были до
-            PreparedStatement S2 = connection.prepareStatement("SELECT * FROM clients WHERE id_clients =? ");
-            S2.setObject(1,id);
-            ResultSet resSet = S2.executeQuery();
-            Clients p=new Clients(
-                    resSet.getInt("id_clients"),
-                    resSet.getString("surname_clients") ,
-                    resSet.getString("name_clients"),
-                    resSet.getString("middle_clients"),
-                    resSet.getString("birhdate"),
-                    resSet.getString("email"),
-                    resSet.getString("phone"),
-                    resSet.getFloat("point")
-            );
-            S2.close();
-            //изменение
-            PreparedStatement S = connection.prepareStatement("UPDATE clients SET 'surname_clients'=?, 'name_clients'=?,'middle_clients'=?,'birhdate'=?,'email'=?,'phone'=?,'point'=?  WHERE id_clients =? ");
-            S.setObject(1,"sname1");
-            S.setObject(2,"name1");
-            S.setObject(3,"mname1");
-            S.setObject(4,"HB1");
-            S.setObject(5,"email1");
-            S.setObject(6,"phone1");
-            S.setObject(7,point);
-            S.setObject(8,id);
-            S.execute();
-            S.close();
-            //значение после
-            PreparedStatement S1 = connection.prepareStatement("SELECT * FROM clients WHERE id_clients =? ");
-            S1.setObject(1,id);
-            ResultSet resSet1 = S1.executeQuery();
-                Clients p2=new Clients(
-                        resSet1.getInt("id_clients"),
-                        resSet1.getString("surname_clients") ,
-                        resSet1.getString("name_clients"),
-                        resSet1.getString("middle_clients"),
-                        resSet1.getString("birhdate"),
-                        resSet1.getString("email"),
-                        resSet1.getString("phone"),
-                        resSet1.getFloat("point")
-                );
-            S1.close();
+            List<Record> rec=selectRecord();
+            for (Record r:rec
+                 ) {
+                if(r.getClients().getId()==id){
+                    PreparedStatement S2 = connection.prepareStatement("UPDATE record SET " +
+                            "'surname_clients'=?," +
+                            "'name_clients'=?," +
+                            "'middle_clients'=?" +
+                            "WHERE id_record =? ");
+                    //верный вариант этот,а не
+                    //         "'surname_clients'=?," +
+                    //         "'name_clients'=?," +
+                    //         "'middle_clients'=?" +
+                    //         "WHERE 'id_record' =? ");   !!!!!!!!!!!!!!!!
 
+                    S2.setObject(1,c.getSurname());
+                    S2.setObject(2,c.getName());
+                    S2.setObject(3,c.getMiddle());
+                    S2.setObject(4,r.getId());
+                    S2.execute();
+                    S2.close();
+                }
+            }
+            rec=selectRecord();
+            PreparedStatement S3 = connection.prepareStatement("UPDATE performedWork SET " +
+                    "'surname_clients'=?," +
+                    "'name_clients'=?," +
+                    "'middle_clients'=?" +
+                    "WHERE id_clients =? ");
+            S3.setObject(1,c.getSurname());
+            S3.setObject(2,c.getName());
+            S3.setObject(3,c.getMiddle());
+            S3.setObject(4,id);
+            S3.execute();
+            S3.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
     public static void changeClientsEasy(int id,float point){
         try {
-            //какие значения были до
-            PreparedStatement S2 = connection.prepareStatement("SELECT * FROM clients WHERE id_clients =? ");
-            S2.setObject(1,id);
-            ResultSet resSet = S2.executeQuery();
-            Clients p=new Clients(
-                    resSet.getInt("id_clients"),
-                    resSet.getString("surname_clients") ,
-                    resSet.getString("name_clients"),
-                    resSet.getString("middle_clients"),
-                    resSet.getString("birhdate"),
-                    resSet.getString("email"),
-                    resSet.getString("phone"),
-                    resSet.getFloat("point")
-            );
-            S2.close();
-
             //изменение
             PreparedStatement S = connection.prepareStatement("UPDATE clients SET 'point'=?  WHERE id_clients =? ");
             S.setObject(1,point);
             S.setObject(2,id);
             S.execute();
             S.close();
-
-            //значение после
-            PreparedStatement S1 = connection.prepareStatement("SELECT * FROM clients WHERE id_clients =? ");
-            S1.setObject(1,id);
-            ResultSet resSet1 = S1.executeQuery();
-            Clients p2=new Clients(
-                    resSet1.getInt("id_clients"),
-                    resSet1.getString("surname_clients") ,
-                    resSet1.getString("name_clients"),
-                    resSet1.getString("middle_clients"),
-                    resSet1.getString("birhdate"),
-                    resSet1.getString("email"),
-                    resSet1.getString("phone"),
-                    resSet1.getFloat("point")
-            );
-            S1.close();
-
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
-
-
     public static void changeEmployee(int id,Employee c){
         try {
             PreparedStatement S = connection.prepareStatement("UPDATE employee SET 'surname_employee'=?, 'name_employee'=?,'middle_employee'=?,'birhdate'=?,'post'=?,'phone'=?  WHERE id_employee =? ");
@@ -510,50 +455,50 @@ public class DBWorker {
             S.setObject(7,id);
             S.execute();
             S.close();
+            PreparedStatement S2 = connection.prepareStatement("UPDATE record SET " +
+                    "'surname_employee'=?," +
+                    "'name_employee'=?," +
+                    "'middle_employee'=?" +
+                    "WHERE id_employee =? ");
+            S2.setObject(1,c.getSurname());
+            S2.setObject(2,c.getName());
+            S2.setObject(3,c.getMiddle());
+            S2.setObject(4,id);
+            S2.execute();
+            S2.close();
+            PreparedStatement S3 = connection.prepareStatement("UPDATE performedWork SET " +
+                    "'surname_employee'=?," +
+                    "'name_employee'=?," +
+                    "'middle_employee'=?" +
+                    "WHERE id_employee =? ");
+            S3.setObject(1,c.getSurname());
+            S3.setObject(2,c.getName());
+            S3.setObject(3,c.getMiddle());
+            S3.setObject(4,id);
+            S3.execute();
+            S3.close();
+
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
-    public static void changePerformedWork(int id,Work p){
+    public static void cancelPerformedWork(int id) {
         try {
             PreparedStatement S = connection.prepareStatement("UPDATE performedWork SET " +
-                            "'name'=?," +
-                            "'price'=?," +
-                            "'point',"+
-                            "'income',"+
-                            "'id_clients'=?," +
-                            "'surname_clients'=?," +
-                            "'name_clients'=?," +
-                            "'middle_clients'=?," +
-                            "'id_employee'=?," +
-                            "'surname_employee'=?," +
-                            "'name_employee'=?," +
-                            "'middle_employee'=?," +
-                            "'date'=?," +
-                            "'time'=?," +
+                            "'income'=?," +
+                            "'point'=?," +
                             "'comment'=?" +
-                    "WHERE 'id_work' =? ");
-            S.setObject(1,p.getServices().getName());
-            S.setObject(2,p.getServices().getPrice());
-            S.setObject(3,p.getPoint());
-            S.setObject(4,p.getServices().getPrice()-p.getPoint());
-            S.setObject(5,p.getClients().getId());
-            S.setObject(6,p.getClients().getSurname());
-            S.setObject(7,p.getClients().getName());
-            S.setObject(8,p.getClients().getMiddle());
-            S.setObject(9,p.getEmployee().getId());
-            S.setObject(10,p.getEmployee().getSurname());
-            S.setObject(11,p.getEmployee().getName());
-            S.setObject(12,p.getEmployee().getMiddle());
-            S.setObject(13,p.getData());
-            S.setObject(14,p.getTime());
-            S.setObject(15,p.getComments());
-            S.setObject(16,id);
+                    "WHERE id_work =? ");
+            S.setObject(1,0);
+            S.setObject(2,0);
+            S.setObject(3,"Возврат средств");
+            S.setObject(4,id);
             S.execute();
             S.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+        List<Work> List=selectPerformedWork();
     }
     public static void changeRecord(int id,Record p){
         try {
@@ -571,7 +516,7 @@ public class DBWorker {
                     "'date'=?," +
                     "'time'=?," +
                     "'comment'=?" +
-                    "WHERE 'id_record' =? ");
+                    "WHERE id_record =? ");
             S.setObject(1,p.getServices().getName());
             S.setObject(2,p.getServices().getPrice());
             S.setObject(3,p.getClients().getId());
@@ -588,6 +533,7 @@ public class DBWorker {
             S.setObject(14,id);
             S.execute();
             S.close();
+            List<Record> r=selectRecord();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

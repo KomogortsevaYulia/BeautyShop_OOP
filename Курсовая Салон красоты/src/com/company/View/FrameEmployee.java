@@ -2,6 +2,7 @@ package com.company.View;
 
 import com.company.Essence.Employee;
 import com.company.Model.TableModelEmployee;
+import com.company.Model.UpdateTM;
 
 import javax.swing.*;
 import javax.swing.text.DateFormatter;
@@ -9,6 +10,8 @@ import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,14 +25,14 @@ public class FrameEmployee extends JFrame {
     public static JTable tableEmployee=new JTable(TMEmployee);
 
     public  FrameEmployee(){
-
-        tableEmployee.getColumnModel().getColumn(0).setPreferredWidth(30);
-        tableEmployee.getColumnModel().getColumn(1).setPreferredWidth(100);
+       tableEmployee.removeColumn(tableEmployee.getColumnModel().getColumn(0));
+       // tableEmployee.getColumnModel().getColumn(0).setPreferredWidth(30);
+      /*  tableEmployee.getColumnModel().getColumn(1).setPreferredWidth(100);
         tableEmployee.getColumnModel().getColumn(2).setPreferredWidth(100);
         tableEmployee.getColumnModel().getColumn(3).setPreferredWidth(100);
         tableEmployee.getColumnModel().getColumn(4).setPreferredWidth(90);
         tableEmployee.getColumnModel().getColumn(5).setPreferredWidth(200);
-        tableEmployee.getColumnModel().getColumn(6).setPreferredWidth(110);
+       // tableEmployee.getColumnModel().getColumn(6).setPreferredWidth(110);*/
 
         //метод создающий окно с сотрудниками
         //кнопки+листенеры+панель с таблицей
@@ -41,10 +44,10 @@ public class FrameEmployee extends JFrame {
         JButton delete=new JButton("Удалить сотрудника");
         JButton change=new JButton("Редактировать");
         JButton home=new JButton("На главную");
-        add.setBackground(new Color(93,222,211));
-        delete.setBackground(new Color(93,222,211));
-        change.setBackground(new Color(93,222,211));
-        home.setBackground(new Color(93,222,211));
+        add.setBackground(new Color(176,224,230));
+        delete.setBackground(new Color(176,224,230));
+        change.setBackground(new Color(176,224,230));
+        home.setBackground(new Color(176,224,230));
         add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -113,6 +116,13 @@ public class FrameEmployee extends JFrame {
         panel.add(new JScrollPane(tableEmployee),BorderLayout.CENTER);//добавили таблицу в панель
         panel.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
 
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                e.getWindow().dispose();
+                MainFrame.f.setVisible(true);
+            }
+        });
 
         frame.add(panel);
         frame.setSize(850,500);
@@ -168,27 +178,36 @@ public class FrameEmployee extends JFrame {
         panel.add(ftfPhone);
 
         JButton add=new JButton("Добавить");
-        add.setBackground(new Color(93,222,211));
+        add.setBackground(new Color(176,224,230));
         add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                TMEmployee.addRow(new Employee(
-                        surname.getText(),
-                        name.getText(),
-                        midllename.getText(),
-                        ftfDate.getText(),
-                        post.getText(),
-                        ftfPhone.getText()
-                ));
-                dialog.dispose();
-                name.setText("");
-                surname.setText("");
-                midllename.setText("");
-                post.setText("");
-                JOptionPane.showMessageDialog(dialog,
-                        " Сотрудник успешно добавлен!",
-                        "Уведомление",
-                        JOptionPane.INFORMATION_MESSAGE);
+                if(surname.getText().equals("") || name.getText().equals("")||post.getText().equals("") || midllename.getText().equals("") ||ftfPhone.getText().equals("+0-000-000-00-00")) {
+                    JOptionPane.showMessageDialog(dialog,
+                            " Поля Фамилия,Имя ,Отчество ,Должность и телефон должны быть заполнены!",
+                            "Ошибка",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                else {
+                    TMEmployee.addRow(new Employee(
+                            surname.getText(),
+                            name.getText(),
+                            midllename.getText(),
+                            ftfDate.getText(),
+                            post.getText(),
+                            ftfPhone.getText()
+                    ));
+                    dialog.dispose();
+                    name.setText("");
+                    surname.setText("");
+                    midllename.setText("");
+                    post.setText("");
+                    JOptionPane.showMessageDialog(dialog,
+                            " Сотрудник успешно добавлен!",
+                            "Уведомление",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    UpdateTM.updateTM();
+                }
             }
         });
 
@@ -208,15 +227,7 @@ public class FrameEmployee extends JFrame {
         dialog.setVisible(true);
     }
     public static void changeEmployee(){
-        Employee c=new Employee(
-                Integer.parseInt(String.valueOf(TMEmployee.getValueAt(tableEmployee.getSelectedRow(),0))),
-                String.valueOf(TMEmployee.getValueAt(tableEmployee.getSelectedRow(),1)),
-                String.valueOf(TMEmployee.getValueAt(tableEmployee.getSelectedRow(),2)),
-                String.valueOf(TMEmployee.getValueAt(tableEmployee.getSelectedRow(),3)),
-                String.valueOf(TMEmployee.getValueAt(tableEmployee.getSelectedRow(),4)),
-                String.valueOf(TMEmployee.getValueAt(tableEmployee.getSelectedRow(),5)),
-                String.valueOf(TMEmployee.getValueAt(tableEmployee.getSelectedRow(),6))
-        );
+        Employee c= TMEmployee.getRow(Integer.parseInt(String.valueOf(TMEmployee.getValueAt(tableEmployee.getSelectedRow(),0))));
 
         JDialog dialog=new JDialog();
         dialog.setTitle("Редактирование сотрудника");
@@ -270,19 +281,27 @@ public class FrameEmployee extends JFrame {
         panel.add(ftfPhone);
 
         JButton add=new JButton("Изменить");
-        add.setBackground(new Color(93,222,211));
+        add.setBackground(new Color(176,224,230));
         add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                TMEmployee.changeRow(c.getId(),new Employee(
-                        surname.getText(),
-                        name.getText(),
-                        midllename.getText(),
-                        ftfDate.getText(),
-                        post.getText(),
-                        ftfPhone.getText()
-                ));
-                dialog.dispose();
+                if(surname.getText().equals("") || name.getText().equals("")||post.getText().equals("") || midllename.getText().equals("") ||ftfPhone.getText().equals("+0-000-000-00-00")) {
+                    JOptionPane.showMessageDialog(dialog,
+                            " Поля Фамилия,Имя ,Отчество ,Должность и телефон должны быть заполнены!",
+                            "Ошибка",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                else {
+                    TMEmployee.changeRow(c.getId(), new Employee(
+                            surname.getText(),
+                            name.getText(),
+                            midllename.getText(),
+                            ftfDate.getText(),
+                            post.getText(),
+                            ftfPhone.getText()
+                    ));
+                    dialog.dispose();
+                }
             }
         });
 

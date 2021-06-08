@@ -26,6 +26,25 @@ public class Employee {
         this.post=post;
         this.phone=phone;
     }
+    public boolean equals(Employee employee
+    ) {
+        if(this.getId()==employee.getId()
+               /* &this.getPost().equals(employee.getPost())
+                &this.getBirthdate().equals(employee.getBirthdate())
+                &this.getName().equals(employee.getName())
+                &this.getMiddle().equals(employee.getMiddle())
+                &this.getSurname().equals(employee.getSurname())
+                &this.getPhone().equals(employee.getPhone())*/
+        ){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getSurname() {
         return surname;

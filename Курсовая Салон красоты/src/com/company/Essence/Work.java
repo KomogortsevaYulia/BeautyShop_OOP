@@ -22,6 +22,7 @@ public class Work {
         this.data=data;
         this.time=time;
         this.comments=comments;
+
     }
     public Work(Services s,float points,float income, Clients c, Employee e, String data, String time, String comments){
         this.services=s;

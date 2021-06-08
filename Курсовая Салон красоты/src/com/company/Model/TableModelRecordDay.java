@@ -1,6 +1,7 @@
 package com.company.Model;
 
 import com.company.Essence.Record;
+import com.company.View.FrameRecord;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
@@ -124,21 +125,12 @@ public class TableModelRecordDay extends AbstractTableModel {
     }
 
     public void addRow(Record p){
-        DBWorker.initDB();
-        DBWorker.addRecord(p);
-        DBWorker.closeDB();
-        update();
+        FrameRecord.TMRecord.addRow(p);
     }
     public void deleteRow(int[] id){
-        DBWorker.initDB();
-        DBWorker.deleteRecord(id);
-        DBWorker.closeDB();
-        update();
+        FrameRecord.TMRecord.deleteRow(id);
     }
     public void changeRow(int id,Record e){
-        DBWorker.initDB();
-        DBWorker.changeRecord(id,e);
-        DBWorker.closeDB();
-        update();
+        FrameRecord.TMRecord.changeRow(id,e);
     }
 }

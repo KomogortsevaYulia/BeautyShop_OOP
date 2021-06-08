@@ -1,5 +1,7 @@
 package com.company.Essence;
 
+import java.util.Objects;
+
 public class Record {
     private int id;
     private Services services;
@@ -8,6 +10,28 @@ public class Record {
     private String data;
     private String time;
     private String comments;
+
+
+    public boolean equals(Record r) {
+        if(this.getId()==r.getId()&
+            this.getClients().equals(r.getClients())
+                &this.getServices().equals(r.getServices())
+                &this.getEmployee().equals(r.getEmployee())
+                &this.getComments().equals(r.getComments())
+                &this.getTime().equals(r.getTime())
+                &this.getData().equals(r.getData())
+
+        ){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public Record(int id, Services s, Clients c, Employee e, String data, String time, String comments)
     {

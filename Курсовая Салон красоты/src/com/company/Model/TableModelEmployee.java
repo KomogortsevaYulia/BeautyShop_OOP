@@ -1,6 +1,10 @@
 package com.company.Model;
 
+import com.company.Essence.Clients;
 import com.company.Essence.Employee;
+import com.company.View.FramePerformedWork;
+import com.company.View.FrameRecord;
+import com.company.View.FrameRecordDay;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
@@ -93,22 +97,81 @@ public class TableModelEmployee extends AbstractTableModel {
         }
         return null;
     }
+
+    public Employee getRow(int id){
+        for (Employee c:data
+        ) {
+            if(c.getId() == id) {
+                return c;
+            }
+        }
+        return null;
+    }
+    public List<Employee> getList(){
+        return data;
+    }
+    public String selectRowPhone(int id){
+        for (Employee c:data
+        ) {
+            if(c.getId() == id) {
+                return c.getPhone();
+            }
+        }
+        return null;
+    }
     public void addRow(Employee p){
         DBWorker.initDB();
         DBWorker.addEmployee(p);
         DBWorker.closeDB();
-        update();
+        UpdateTM.updateTM();
+        for (Employee c:data
+        ) {
+            if(c.getSurname().equals(p.getSurname()) & c.getName().equals(p.getName()) && c.getMiddle().equals(p.getMiddle()))
+            {
+                Сancellation.addLog("Таблица \"Сотрудники\"  Добавили сотрудника: ID:"+c.getId()+
+                        " ФИО: "+c.getSurname()+" "+c.getName()+" "+c.getMiddle()+
+                        " Телефон: "+c.getPhone()+" День рождения: "+c.getBirthdate()+ " Должность: "+c.getPost());
+            }
+        }
     }
     public void deleteRow(int[] id){
+        for (int i = 0; i < id.length; i++) {
+            for (Employee c:data
+            ) {
+                if(id[i]==c.getId()){
+                    Сancellation.addLog("Таблица \"Сотрудники\"  Удалили данные сотрудника: ID:"+c.getId()+
+                            " ФИО: "+c.getSurname()+" "+c.getName()+" "+c.getMiddle()+
+                            " Телефон: "+c.getPhone()+" День рождения: "+c.getBirthdate()+ " Должность: "+c.getPost());
+                }
+            }
+        }
         DBWorker.initDB();
         DBWorker.deleteEmployee(id);
         DBWorker.closeDB();
-        update();
+        UpdateTM.updateTM();
     }
     public void changeRow(int id,Employee e){
+        Employee employee = null;
+        for (Employee c:data
+        ) {
+            if(id==c.getId()){
+                employee=c;
+            }
+        }
         DBWorker.initDB();
         DBWorker.changeEmployee(id,e);
         DBWorker.closeDB();
-        update();
+        UpdateTM.updateTM();
+        for (Employee c:data
+        ) {
+            if(c.getId()==id)
+            {
+                Сancellation.addLog("Таблица \"Сотрудники\"   Изменили данные сотрудника: ID:"+c.getId()+
+                        " ФИО: "+employee.getSurname()+" "+employee.getName()+" "+employee.getMiddle()+
+                        " Телефон: "+employee.getPhone()+" День рождения: "+employee.getBirthdate()+ " Должность: "+employee.getPost()+
+                        " На следующие данные:"+" ФИО: "+c.getSurname()+" "+c.getName()+" "+c.getMiddle()+
+                        " Телефон: "+c.getPhone()+" День рождения: "+c.getBirthdate()+ " Должность: "+c.getPost());
+            }
+        }
     }
 }

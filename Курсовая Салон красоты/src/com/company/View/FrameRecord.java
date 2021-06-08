@@ -5,12 +5,15 @@ import com.company.Essence.Employee;
 import com.company.Essence.Services;
 import com.company.Essence.Record;
 import com.company.Model.TableModelRecord;
+import com.company.Model.UpdateTM;
 
 import javax.swing.*;
 import javax.swing.text.DateFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -20,7 +23,7 @@ public class FrameRecord extends JFrame {
     public static TableModelRecord TMRecord=new TableModelRecord();
     public static JTable tableRecord=new JTable(TMRecord);
     public FrameRecord(){
-
+        tableRecord.removeColumn(tableRecord.getColumnModel().getColumn(0));
         /*tableRecord.getColumnModel().getColumn(0).setPreferredWidth(30);
         tableRecord.getColumnModel().getColumn(1).setPreferredWidth(150);
         tableRecord.getColumnModel().getColumn(2).setPreferredWidth(50);
@@ -44,10 +47,10 @@ public class FrameRecord extends JFrame {
         JButton delete=new JButton("Удалить запись");
         JButton change=new JButton("Редактировать запись");
         JButton home=new JButton("На главную");
-        add.setBackground(new Color(93,222,211));
-        delete.setBackground(new Color(93,222,211));
-        change.setBackground(new Color(93,222,211));
-        home.setBackground(new Color(93,222,211));
+        add.setBackground(new Color(176,224,230));
+        delete.setBackground(new Color(176,224,230));
+        change.setBackground(new Color(176,224,230));
+        home.setBackground(new Color(176,224,230));
         add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -114,7 +117,13 @@ public class FrameRecord extends JFrame {
         panel.add(buttonPanel,BorderLayout.NORTH);
         panel.add(new JScrollPane(tableRecord),BorderLayout.CENTER);//добавление таблицы в панель
         panel.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
-
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                e.getWindow().dispose();
+                MainFrame.f.setVisible(true);
+            }
+        });
         frame.add(panel);
         frame.setTitle("Все записи");
         frame.setSize(1200,500);
@@ -124,7 +133,7 @@ public class FrameRecord extends JFrame {
     public static void addRecord() {
         DefaultComboBoxModel DCBMServices = new DefaultComboBoxModel();
         for (int i = 0; i < FrameServices.TMServices.getRowCount(); i++) {
-            String s=FrameServices.TMServices.getValueAt(i,1)+"  "+FrameServices.TMServices.getValueAt(i,2)+" р.";
+            String s=FrameServices.TMServices.getValueAt(i,0)+"  "+FrameServices.TMServices.getValueAt(i,1)+" р.";
             DCBMServices.addElement(s);
         }
         JComboBox CBServices = new JComboBox(DCBMServices);
@@ -171,7 +180,7 @@ public class FrameRecord extends JFrame {
         panel.add(new JScrollPane(CBServices));
 
         JButton addClients=new JButton("Добавить клиента");
-        addClients.setBackground(new Color(93,222,211));
+        addClients.setBackground(new Color(176,224,230));
         addClients.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -204,41 +213,38 @@ public class FrameRecord extends JFrame {
         JDialog dialog=new JDialog();
 
         JButton add=new JButton("Добавить");
-        add.setBackground(new Color(180,240,235));
+        add.setBackground(new Color(176,224,230));
         add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                TMRecord.addRow(new Record(
-                        new Services(
-                                String.valueOf(FrameServices.TMServices.getValueAt(CBServices.getSelectedIndex(),1)),
-                                Float.valueOf(String.valueOf(FrameServices.TMServices.getValueAt(CBServices.getSelectedIndex(),2)))),
-                        new Clients(
-                                Integer.valueOf(String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),0))),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),1)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),2)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),3)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),4)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),5)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),6)),
-                                Integer.parseInt(String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),7)))
-                                ),
-                        new Employee(
-                                Integer.valueOf(String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),0))),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),1)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),2)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),3)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),4)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),5)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),6))),
-                        ftfDate.getText(),
-                        ftfTime.getText(),
-                        comment.getText())
+                Date date=new Date();
+                Calendar calendar = new GregorianCalendar(Integer.valueOf(String.valueOf(ftfDate.getText()).substring(6,10) ),
+                        Integer.valueOf(String.valueOf(ftfDate.getText()).substring(3,5) )-1 ,
+                        Integer.valueOf(String.valueOf(ftfDate.getText()).substring(0,2) ),
+                        Integer.valueOf(String.valueOf(ftfTime.getText()).substring(0,2) ),
+                        Integer.valueOf(String.valueOf(ftfTime.getText()).substring(3,5) )
                 );
-                dialog.dispose();
-                JOptionPane.showMessageDialog(dialog,
-                        " Запись успешно добавлена!",
-                        "Уведомление",
-                        JOptionPane.INFORMATION_MESSAGE);
+                Date date2=calendar.getTime();
+                if(date.after(date2)){
+                    JOptionPane.showMessageDialog(dialog,
+                            " Нельзя записывать на прошлое !",
+                            "Ошибка",
+                            JOptionPane.ERROR_MESSAGE);
+                }else {
+                    TMRecord.addRow(new Record(
+                            FrameServices.TMServices.getRow(String.valueOf(FrameServices.TMServices.getValueAt(CBServices.getSelectedIndex(), 0))),
+                            FrameClients.TMClients.getRow(Integer.valueOf(String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(), 0)))),
+                            FrameEmployee.TMEmployee.getRow(Integer.valueOf(String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(), 0)))),
+                            ftfDate.getText(),
+                            ftfTime.getText(),
+                            comment.getText())
+                    );
+                    dialog.dispose();
+                    JOptionPane.showMessageDialog(dialog,
+                            " Запись успешно добавлена!",
+                            "Уведомление",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
             }
         });
 
@@ -262,7 +268,7 @@ public class FrameRecord extends JFrame {
         int index=-1;
         DefaultComboBoxModel DCBMServices = new DefaultComboBoxModel();
         for (int i = 0; i < FrameServices.TMServices.getRowCount(); i++) {
-            String s=FrameServices.TMServices.getValueAt(i,1)+"  "+FrameServices.TMServices.getValueAt(i,2)+" р.";
+            String s=FrameServices.TMServices.getValueAt(i,0)+"  "+FrameServices.TMServices.getValueAt(i,1)+" р.";
             DCBMServices.addElement(s);
             String str=TMRecord.getValueAt(tableRecord.getSelectedRow(),1)+"  "+TMRecord.getValueAt(tableRecord.getSelectedRow(),2)+" р.";
             if (s.equals(str)){
@@ -329,7 +335,7 @@ public class FrameRecord extends JFrame {
         panel.add(new JScrollPane(CBServices));
 
         JButton addClients=new JButton("Добавить клиента");
-        addClients.setBackground(new Color(93,222,211));
+        addClients.setBackground(new Color(176,224,230));
         addClients.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -363,31 +369,14 @@ public class FrameRecord extends JFrame {
         JDialog dialog=new JDialog();
 
         JButton add=new JButton("Изменить");
-        add.setBackground(new Color(93,222,211));
+        add.setBackground(new Color(176,224,230));
         add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 TMRecord.changeRow(Integer.parseInt(String.valueOf(TMRecord.getValueAt(tableRecord.getSelectedRow(),0))),new Record(
-                        new Services(
-                                String.valueOf(FrameServices.TMServices.getValueAt(CBServices.getSelectedIndex(),1)),
-                                Float.valueOf(String.valueOf(FrameServices.TMServices.getValueAt(CBServices.getSelectedIndex(),2)))),
-                        new Clients(
-                                Integer.valueOf(String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),0))),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),1)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),2)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),3)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),4)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),5)),
-                                String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),6)),
-                                Integer.valueOf(String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),7)))),
-                        new Employee(
-                                Integer.valueOf(String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),0))),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),1)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),2)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),3)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),4)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),5)),
-                                String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),6))),
+                        FrameServices.TMServices.getRow(String.valueOf(FrameServices.TMServices.getValueAt(CBServices.getSelectedIndex(),0))),
+                        FrameClients.TMClients.getRow(Integer.valueOf(String.valueOf(FrameClients.TMClients.getValueAt(CBClients.getSelectedIndex(),0)))),
+                        FrameEmployee.TMEmployee.getRow(Integer.valueOf(String.valueOf(FrameEmployee.TMEmployee.getValueAt(CBEmployee.getSelectedIndex(),0)))),
                         ftfDate.getText(),
                         ftfTime.getText(),
                         comment.getText())
@@ -407,7 +396,7 @@ public class FrameRecord extends JFrame {
         p.setBackground(Color.white);
         p.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
 
-        dialog.setTitle("Новая запись");
+        dialog.setTitle("Редактирование записи");
         dialog.setLayout(new BorderLayout());
         dialog.add(p);
         dialog.setModal(true);

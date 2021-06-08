@@ -1,6 +1,7 @@
 package com.company.Model;
 
 import com.company.Essence.Record;
+import com.company.Essence.Work;
 import com.company.View.FrameRecordDay;
 import com.company.View.MainFrame;
 
@@ -21,7 +22,6 @@ public class TableModelRecord extends AbstractTableModel {
         data=DBWorker.selectRecord();
         DBWorker.closeDB();
         this.fireTableDataChanged();
-        FrameRecordDay.TMRecordDay.update();
     }
 
     @Override
@@ -126,22 +126,83 @@ public class TableModelRecord extends AbstractTableModel {
         return null;
     }
 
-    public void addRow(Record p){
+    public Record getRow(int id){
+        for (Record c:data
+        ) {
+            if(c.getId() == id) {
+                return c;
+            }
+        }
+        return null;
+    }
+    public List<Record> getList(){
+        return data;
+    }
+    public void addRow(Record p) {
+
         DBWorker.initDB();
         DBWorker.addRecord(p);
         DBWorker.closeDB();
-        update();
+        UpdateTM.updateTM();
+        int max=0;
+        for (Record r:data
+             ) {
+            if(r.getId()>max)max=r.getId();
+        }
+        Record record= getRow(max);
+        Сancellation.addLog("Таблица \"Записи\" "+" Добавили запись: ID:"+record.getId()+
+                " Услуга: Название: "+record.getServices().getName()+" Стоимость: "+record.getServices().getPrice()+
+                " ФИО клиента: "+record.getClients().getSurname()+" "+record.getClients().getName()+" "+record.getClients().getMiddle()+
+                " ФИО сотрудника: "+record.getEmployee().getSurname()+" "+record.getEmployee().getName()+" "+record.getEmployee().getMiddle()+
+                " Дата: "+record.getData()+
+                " Время: "+record.getTime()+
+                " Комментарий: "+record.getComments());
+
     }
     public void deleteRow(int[] id){
+        for (int i = 0; i < id.length; i++) {
+            Record record= getRow(id[i]);
+            Сancellation.addLog("Таблица \"Записи\" "+" Удалили запись: ID:"+record.getId()+
+                    " Услуга: Название: "+record.getServices().getName()+" Стоимость: "+record.getServices().getPrice()+
+                    " ФИО клиента: "+record.getClients().getSurname()+" "+record.getClients().getName()+" "+record.getClients().getMiddle()+
+                    " ФИО сотрудника: "+record.getEmployee().getSurname()+" "+record.getEmployee().getName()+" "+record.getEmployee().getMiddle()+
+                    " Дата: "+record.getData()+
+                    " Время: "+record.getTime()+
+                    " Комментарий: "+record.getComments());
+        }
         DBWorker.initDB();
         DBWorker.deleteRecord(id);
         DBWorker.closeDB();
-        update();
+        UpdateTM.updateTM();
+
     }
     public void changeRow(int id,Record e){
+        List<Record> copy=data;
+
         DBWorker.initDB();
         DBWorker.changeRecord(id,e);
         DBWorker.closeDB();
-        update();
+
+        for (int i = 0; i < copy.size(); i++) {
+            if(id==copy.get(i).getId()) {
+                Record record = data.get(i);
+                Сancellation.addLog("Таблица \"Записи\" " + " Изменили запись: ID:" + record.getId() +
+                        " Услуга: Название: " + record.getServices().getName() + " Стоимость: " + record.getServices().getPrice() +
+                        " ФИО клиента: " + record.getClients().getSurname() + " " + record.getClients().getName() + " " + record.getClients().getMiddle() +
+                        " ФИО сотрудника: " + record.getEmployee().getSurname() + " " + record.getEmployee().getName() + " " + record.getEmployee().getMiddle() +
+                        " Дата: " + record.getData() +
+                        " Время: " + record.getTime() +
+                        " Комментарий: " + record.getComments()+
+                        "На следующие данные: "+
+                                " Услуга: Название: " + e.getServices().getName() + " Стоимость: " + e.getServices().getPrice() +
+                                " ФИО клиента: " + e.getClients().getSurname() + " " + e.getClients().getName() + " " + e.getClients().getMiddle() +
+                                " ФИО сотрудника: " + e.getEmployee().getSurname() + " " + e.getEmployee().getName() + " " + e.getEmployee().getMiddle() +
+                                " Дата: " + e.getData() +
+                                " Время: " + e.getTime() +
+                                " Комментарий: " + e.getComments()
+                        );
+            }
+        }
+        UpdateTM.updateTM();
     }
 }

@@ -7,8 +7,7 @@ import javax.swing.*;
 import javax.swing.text.DateFormatter;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,19 +15,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class FrameClients extends JFrame {
+public class FrameClients extends JFrame{
+
     public static TableModelClients TMClients=new TableModelClients();
     public static JTable tableClients=new JTable(TMClients);
-
     public FrameClients(){
-        tableClients.getColumnModel().getColumn(0).setPreferredWidth(40);
-        tableClients.getColumnModel().getColumn(1).setPreferredWidth(110);
+        tableClients.removeColumn(tableClients.getColumnModel().getColumn(0));
+        //tableClients.getColumnModel().getColumn(0).setPreferredWidth(40);
+       /* tableClients.getColumnModel().getColumn(1).setPreferredWidth(110);
         tableClients.getColumnModel().getColumn(2).setPreferredWidth(110);
         tableClients.getColumnModel().getColumn(3).setPreferredWidth(110);
         tableClients.getColumnModel().getColumn(4).setPreferredWidth(90);
-        tableClients.getColumnModel().getColumn(5).setPreferredWidth(100);
-        tableClients.getColumnModel().getColumn(6).setPreferredWidth(120);
-        JFrame frame=new JFrame();
+        tableClients.getColumnModel().getColumn(5).setPreferredWidth(100);*/
+        //tableClients.getColumnModel().getColumn(6).setPreferredWidth(120);
+
         JPanel buttonPanel=new JPanel();
         buttonPanel.setBackground(Color.white);
         buttonPanel.setLayout(new FlowLayout());
@@ -36,10 +36,10 @@ public class FrameClients extends JFrame {
         JButton delete=new JButton("Удалить клиента");
         JButton change=new JButton("Редактировать");
         JButton home=new JButton("На главную");
-        add.setBackground(new Color(93,222,211));
-        delete.setBackground(new Color(93,222,211));
-        change.setBackground(new Color(93,222,211));
-        home.setBackground(new Color(93,222,211));
+        add.setBackground(new Color(176,224,230));
+        delete.setBackground(new Color(176,224,230));
+        change.setBackground(new Color(176,224,230));
+        home.setBackground(new Color(176,224,230));
         add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -88,6 +88,7 @@ public class FrameClients extends JFrame {
 
             }
         });
+        JFrame frame=new JFrame();
         home.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -108,14 +109,21 @@ public class FrameClients extends JFrame {
         panel.add(new JScrollPane(tableClients),BorderLayout.CENTER);//добавление таблицы в панель
         panel.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
 
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                e.getWindow().dispose();
+                MainFrame.f.setVisible(true);
+            }
+        });
 
         frame.add(panel);
         frame.setTitle("Клиенты");
         frame.setSize(740,500);
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
-
     }
+
     public static void addCliens() {
 
         JDialog dialog=new JDialog();
@@ -165,28 +173,44 @@ public class FrameClients extends JFrame {
         panel.add(ftfPhone);
 
         JButton add=new JButton("Добавить");
-        add.setBackground(new Color(93,222,211));
+        add.setBackground(new Color(176,224,230));
         add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                TMClients.addRow(new Clients(
-                        surname.getText(),
-                        name.getText(),
-                        midllename.getText(),
-                        ftfDate.getText(),
-                        email.getText(),
-                        ftfPhone.getText(),
-                        0
-                ));
-                dialog.dispose();
-                name.setText("");
-                surname.setText("");
-                midllename.setText("");
-                email.setText("");
-                JOptionPane.showMessageDialog(dialog,
-                        " Клиент успешно добавлен!",
-                        "Уведомление",
-                        JOptionPane.INFORMATION_MESSAGE);
+                if(surname.getText().equals("") || name.getText().equals("") || midllename.getText().equals("") ||ftfPhone.getText().equals("+0-000-000-00-00")) {
+                    JOptionPane.showMessageDialog(dialog,
+                            " Поля Фамилия,Имя ,Отчество и телефон должны быть заполнены!",
+                            "Ошибка",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                else{
+                    boolean b=TMClients.addRow(new Clients(
+                            surname.getText(),
+                            name.getText(),
+                            midllename.getText(),
+                            ftfDate.getText(),
+                            email.getText(),
+                            ftfPhone.getText(),
+                            0
+                    ));
+                    if(b){
+                        dialog.dispose();
+                        name.setText("");
+                        surname.setText("");
+                        midllename.setText("");
+                        email.setText("");
+                        JOptionPane.showMessageDialog(dialog,
+                                " Клиент успешно добавлен!",
+                                "Уведомление",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
+                   else {
+                        JOptionPane.showMessageDialog(dialog,
+                                " Уже есть такая запись!",
+                                "Ошибка",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                }
             }
         });
 
@@ -207,17 +231,7 @@ public class FrameClients extends JFrame {
     }
     public static void changeCliens() {
 
-        Clients c=new Clients(
-                Integer.parseInt(String.valueOf(TMClients.getValueAt(tableClients.getSelectedRow(),0))),
-                String.valueOf(TMClients.getValueAt(tableClients.getSelectedRow(),1)),
-                String.valueOf(TMClients.getValueAt(tableClients.getSelectedRow(),2)),
-                String.valueOf(TMClients.getValueAt(tableClients.getSelectedRow(),3)),
-                String.valueOf(TMClients.getValueAt(tableClients.getSelectedRow(),4)),
-                String.valueOf(TMClients.getValueAt(tableClients.getSelectedRow(),5)),
-                String.valueOf(TMClients.getValueAt(tableClients.getSelectedRow(),6)),
-                Integer.parseInt(String.valueOf(TMClients.getValueAt(tableClients.getSelectedRow(),7)))
-        );
-
+        Clients c=TMClients.getRow(Integer.parseInt(String.valueOf(TMClients.getValueAt(tableClients.getSelectedRow(),0))));
         JDialog dialog=new JDialog();
         dialog.setTitle("Редактирование клиента");
 
@@ -270,20 +284,40 @@ public class FrameClients extends JFrame {
         panel.add(ftfPhone);
 
         JButton add=new JButton("Изменить");
-        add.setBackground(new Color(93,222,211));
+        add.setBackground(new Color(176,224,230));
         add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                TMClients.changeRow(c.getId(),new Clients(
-                        surname.getText(),
-                        name.getText(),
-                        midllename.getText(),
-                        ftfDate.getText(),
-                        email.getText(),
-                        ftfPhone.getText(),
-                        c.getPoint()
-                ));
-                dialog.dispose();
+                if(surname.getText().equals("") || name.getText().equals("") || midllename.getText().equals("") ||ftfPhone.getText().equals("+0-000-000-00-00")) {
+                    JOptionPane.showMessageDialog(dialog,
+                            " Поля Фамилия,Имя ,Отчество и телефон должны быть заполнены!",
+                            "Ошибка",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                else {
+                    boolean b=TMClients.changeRow(c.getId(), new Clients(
+                            surname.getText(),
+                            name.getText(),
+                            midllename.getText(),
+                            ftfDate.getText(),
+                            email.getText(),
+                            ftfPhone.getText(),
+                            c.getPoint()
+                    ));
+                    if(b){
+                        dialog.dispose();
+                        JOptionPane.showMessageDialog(dialog,
+                                " Данные о клиенте успешно изменены!",
+                                "Уведомление",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }else {
+                        JOptionPane.showMessageDialog(dialog,
+                                " Уже есть такая запись!",
+                                "Ошибка",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+
+                }
             }
         });
 

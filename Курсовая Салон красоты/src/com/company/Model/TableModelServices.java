@@ -1,7 +1,12 @@
 package com.company.Model;
 
+import com.company.Essence.Clients;
 import com.company.Essence.Services;
+import com.company.View.FramePerformedWork;
+import com.company.View.FrameRecord;
+import com.company.View.FrameRecordDay;
 
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
@@ -70,24 +75,71 @@ public class TableModelServices extends AbstractTableModel {
         return false;
     }
 
-    public void addRow(Services p){
-        DBWorker.initDB();
-        DBWorker.addServices(p);
-        DBWorker.closeDB();
-        update();
+    public Services getRow(String s){
+        for (Services serv:data
+             ) {
+            if(serv.getName().equals(s)){
+                return serv;
+            }
+        }
+        return null;
+    }
+    public List<Services> getList(){
+        return data;
+    }
+    public boolean addRow(Services p){
+        boolean exist = false;
+        for (int i = 0; i < getRowCount(); i++) {
+            if (
+                    p.getName().equals(String.valueOf(getValueAt(i, 0))) &
+                            p.getPrice() == Float.parseFloat(String.valueOf(getValueAt(i, 1)))
+            ) {
+                exist = true;
+            }
+        }
+        if (exist) {
+            return false;
+        } else {
+            DBWorker.initDB();
+            DBWorker.addServices(p);
+            DBWorker.closeDB();
+            UpdateTM.updateTM();
+            Сancellation.addLog("Таблица \"Услуги\" " + " Добавили услугу: Название:" + p.getName() +
+                    " Стоимость: " + p.getPrice());
+            return true;
+        }
     }
 
     public void changeRow(String name,Services s){
+        Services services = null;
+        for (Services c:data
+        ) {
+            if(name.equals(c.getName())){
+                services=c;
+            }
+        }
         DBWorker.initDB();
         DBWorker.changeServices(name,s);
         DBWorker.closeDB();
-        update();
+        UpdateTM.updateTM();
+        Сancellation.addLog("Таблица \"Услуги\" " + " Изменили данные услуги: Название:" + services.getName() +
+                " Стоимость: " + services.getPrice()+
+                " На следующие данные: Название: "+s.getName()+" Стоимость: "+s.getPrice());
     }
 
     public void deleteRow(String[] name){
+        for (int i = 0; i < name.length ; i++) {
+            for (Services serv : data
+            ) {
+                if (serv.getName().equals(name[i])) {
+                    Сancellation.addLog("Таблица \"Услуги\" " + " Удалили услугу: Название:" + serv.getName() +
+                            " Стоимость: " + serv.getPrice());
+                }
+            }
+        }
         DBWorker.initDB();
         DBWorker.deleteServices(name);
         DBWorker.closeDB();
-        update();
+        UpdateTM.updateTM();
     }
 }
