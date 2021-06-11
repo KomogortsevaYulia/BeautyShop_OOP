@@ -14,9 +14,13 @@ public class FramePerformedWork extends JFrame {
    // private static float usePoint;
     //private static float income;
     public static Color c2=new Color(176,224,230);
-
+    private static boolean y=true;
     public FramePerformedWork(){
-        tableWork.removeColumn(tableWork.getColumnModel().getColumn(0));
+            if(y){
+                tableWork.removeColumn(tableWork.getColumnModel().getColumn(0));
+                y=false;
+            }
+
         //tableWork.getColumnModel().getColumn(0).setPreferredWidth(30);
         /*tableWork.getColumnModel().getColumn(1).setPreferredWidth(150);
         tableWork.getColumnModel().getColumn(2).setPreferredWidth(50);

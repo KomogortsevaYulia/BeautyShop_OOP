@@ -20,9 +20,13 @@ public class FrameRecord extends JFrame {
 
     public static TableModelRecord TMRecord=new TableModelRecord();
     public static JTable tableRecord=new JTable(TMRecord);
-
+    private static boolean y=true;
     public FrameRecord(){
-        tableRecord.removeColumn(tableRecord.getColumnModel().getColumn(0));
+            if(y){
+                tableRecord.removeColumn(tableRecord.getColumnModel().getColumn(0));
+                y=false;
+            }
+
         /*tableRecord.getColumnModel().getColumn(0).setPreferredWidth(30);
         tableRecord.getColumnModel().getColumn(1).setPreferredWidth(150);
         tableRecord.getColumnModel().getColumn(2).setPreferredWidth(50);

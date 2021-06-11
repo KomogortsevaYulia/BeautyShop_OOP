@@ -22,8 +22,13 @@ public class FrameRecordDay extends JFrame {
     public static TableModelRecordDay TMRecordDay=new TableModelRecordDay();
     public static JTable tableRecordDay=new JTable(TMRecordDay);
     public static Color c2=new Color(176,224,230);
+    private static boolean y=true;
     public FrameRecordDay(){
-        tableRecordDay.removeColumn(tableRecordDay.getColumnModel().getColumn(0));
+            if(y){
+                tableRecordDay.removeColumn(tableRecordDay.getColumnModel().getColumn(0));
+                y=false;
+            }
+
         //метод создающий окно с выполненными работами
         //кнопки+листенеры+панель с таблицей
         JFrame frame=new JFrame();
@@ -60,6 +65,10 @@ public class FrameRecordDay extends JFrame {
                         id[j]= (int) TMRecordDay.getValueAt(i[j],0);
                     }
                     TMRecordDay.deleteRow(id);
+                    JOptionPane.showMessageDialog(buttonPanel,
+                            " Запись успешно удалена!",
+                            "Уведомление",
+                            JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         });

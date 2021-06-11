@@ -20,9 +20,15 @@ public class FrameClients extends JFrame{
 
     public static TableModelClients TMClients=new TableModelClients();
     public static JTable tableClients=new JTable(TMClients);
+    private static boolean y=true;
 
     public FrameClients(){
-        tableClients.removeColumn(tableClients.getColumnModel().getColumn(0));
+            if(y){
+                tableClients.removeColumn(tableClients.getColumnModel().getColumn(0));
+                y=false;
+            }
+
+
         //tableClients.getColumnModel().getColumn(0).setPreferredWidth(40);
        /* tableClients.getColumnModel().getColumn(1).setPreferredWidth(110);
         tableClients.getColumnModel().getColumn(2).setPreferredWidth(110);

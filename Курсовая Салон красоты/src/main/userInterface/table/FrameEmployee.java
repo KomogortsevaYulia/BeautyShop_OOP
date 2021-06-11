@@ -24,9 +24,13 @@ public class FrameEmployee extends JFrame {
 
     public static TableModelEmployee TMEmployee=new TableModelEmployee();
     public static JTable tableEmployee=new JTable(TMEmployee);
-
+    private static boolean y=true;
     public  FrameEmployee(){
-       tableEmployee.removeColumn(tableEmployee.getColumnModel().getColumn(0));
+        if(y){
+            tableEmployee.removeColumn(tableEmployee.getColumnModel().getColumn(0));
+            y=false;
+        }
+
        // tableEmployee.getColumnModel().getColumn(0).setPreferredWidth(30);
       /*  tableEmployee.getColumnModel().getColumn(1).setPreferredWidth(100);
         tableEmployee.getColumnModel().getColumn(2).setPreferredWidth(100);
@@ -73,7 +77,7 @@ public class FrameEmployee extends JFrame {
                     TMEmployee.deleteRow(id);
                     JOptionPane.showMessageDialog(buttonPanel,
                             " Сотрудник успешно удален!",
-                            "Ошибка",
+                            "Уведомление",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
             }
@@ -306,6 +310,10 @@ public class FrameEmployee extends JFrame {
                             ftfPhone.getText()
                     ));
                     dialog.dispose();
+                    JOptionPane.showMessageDialog(dialog,
+                            " Сотрудник успешно изменен!",
+                            "Уведомление",
+                            JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         });
